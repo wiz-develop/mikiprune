@@ -13,6 +13,7 @@
 get_header();
 
 $blog_about = CFS()->get('blog_about');
+$blog_page_permalink = get_permalink(get_queried_object_id());
 $posts_per_page = 6;
 $search_posts_per_page = 9;
 $blog_page = isset($_GET['blog_page']) && is_scalar($_GET['blog_page'])
@@ -258,7 +259,7 @@ $is_blog_search = '' !== $blog_keyword || !empty($blog_categories) || '' !== $bl
                                                 <path d="M1 1.25 6 6.25l5-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/>
                                             </svg>
                                         </button>
-                                        <form id="blog-search-form" class="blog-search__form" method="get" action="<?php echo esc_url(get_permalink()); ?>">
+                                        <form id="blog-search-form" class="blog-search__form" method="get" action="<?php echo esc_url($blog_page_permalink); ?>">
                                             <label class="screen-reader-text" for="blog-keyword">ブログ記事のキーワード</label>
                                             <div class="blog-search__input-wrap">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
@@ -311,7 +312,7 @@ $is_blog_search = '' !== $blog_keyword || !empty($blog_categories) || '' !== $bl
                                                 </select>
                                             </label>
 
-                                            <a class="blog-search__reset" href="<?php echo esc_url(get_permalink()); ?>#blog-search-results">
+                                            <a class="blog-search__reset" href="<?php echo esc_url($blog_page_permalink); ?>#blog-search-results">
                                                 <svg class="blog-search__reset-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
                                                     <path d="M4.3 6.1A6.5 6.5 0 1 1 3.2 12" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.6"/>
                                                     <path d="M4.3 2.7v3.4H.9" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"/>
@@ -365,7 +366,7 @@ $is_blog_search = '' !== $blog_keyword || !empty($blog_categories) || '' !== $bl
                                         <nav class="blog-pagination" aria-label="検索結果ページ">
                                             <?php
                                                 echo paginate_links(array(
-                                                    'base' => trailingslashit(get_permalink()).'%_%',
+                                                    'base' => trailingslashit($blog_page_permalink).'%_%',
                                                     'format' => '?blog_page=%#%',
                                                     'current' => $blog_page,
                                                     'total' => $blog_posts_query->max_num_pages,
