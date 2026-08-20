@@ -13,12 +13,64 @@
 get_header();
 
 $blog_about = CFS()->get('blog_about');
-$cat_num = 4;
 $posts_per_page = 6;
 $blog_keyword = isset($_GET['blog_keyword']) && is_string($_GET['blog_keyword'])
     ? sanitize_text_field(wp_unslash($_GET['blog_keyword']))
     : '';
-$is_blog_search = '' !== $blog_keyword;
+$blog_category = isset($_GET['blog_category']) && is_string($_GET['blog_category'])
+    ? sanitize_title(wp_unslash($_GET['blog_category']))
+    : '';
+$blog_month = isset($_GET['blog_month']) && is_string($_GET['blog_month'])
+    ? sanitize_text_field(wp_unslash($_GET['blog_month']))
+    : '';
+
+if (!preg_match('/^\d{6}$/', $blog_month)) {
+    $blog_month = '';
+}
+
+$blog_root_category = get_category_by_slug('blog');
+$blog_child_categories = $blog_root_category ? get_categories(array(
+    'parent' => $blog_root_category->cat_ID,
+    'meta_key' => 'katakana',
+    'orderby' => 'meta_value',
+    'order' => 'ASC',
+    'hide_empty' => true,
+)) : array();
+$selected_blog_category = null;
+
+foreach ($blog_child_categories as $child_category) {
+    if ($blog_category === $child_category->slug) {
+        $selected_blog_category = $child_category;
+        break;
+    }
+}
+
+if (!$selected_blog_category) {
+    $blog_category = '';
+}
+
+$blog_archive_months = array();
+if ($blog_root_category) {
+    $archive_post_ids = get_posts(array(
+        'post_type' => 'post',
+        'posts_per_page' => -1,
+        'post_status' => 'publish',
+        'category__and' => array($blog_root_category->term_id),
+        'orderby' => 'post_date',
+        'order' => 'DESC',
+        'fields' => 'ids',
+        'no_found_rows' => true,
+    ));
+
+    foreach ($archive_post_ids as $archive_post_id) {
+        $month_value = get_post_time('Ym', false, $archive_post_id);
+        if (!isset($blog_archive_months[$month_value])) {
+            $blog_archive_months[$month_value] = get_post_time('Y年n月', false, $archive_post_id);
+        }
+    }
+}
+
+$is_blog_search = '' !== $blog_keyword || '' !== $blog_category || '' !== $blog_month;
 // if (wp_is_mobile()) {
 //     $posts_per_page = 6;
 // } else {
@@ -106,62 +158,31 @@ $is_blog_search = '' !== $blog_keyword;
                                 </a>
                             </div>
                             <?php endif; wp_reset_postdata(); ?>
-                            <section class="blog_top_cat mt-0 mt-4">
-                                <div class="widget_type_archive_cat screen_widget_key_archive_cat_list">
-                                    <div class="cat-list">
-                                        <ul class="d-flex align-items-center flex-wrap mb-0">
-                                            <?php
-                                                $cat_blog = get_category_by_slug("blog");
-                                                $child_cat_args = array(
-                                                    'parent' => $cat_blog->cat_ID,
-                                                    'meta_key' => 'katakana',
-                                                    'orderby' => 'meta_value',
-                                                    'order' => 'ASC',
-                                                );
-                                                $child_cats = get_categories($child_cat_args);
-                                                foreach ($child_cats as $index => $child_cat) :
-                                            ?>
-                                                <li class="cat-item mb-2 <?php if($index > $cat_num) echo 'toggle-cat d-none'; ?>">
-                                                    <a href="/<?php echo $child_cat->slug; ?>/">
-                                                        <div class="link_item">
-                                                            <div class="link_name w-100">
-                                                                <div class="link_name_detail">
-                                                                    <p class="mb-0"><?php echo $child_cat->name; ?></p>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </a>
-                                                </li>
-                                            <?php endforeach; ?>
-                                        </ul>
-                                        <button id="toggle-cat-btn" class="anime-scroll d-flex justify-content-between align-items-center py-2 ps-2 pe-0">
-                                            <span class="toggle-cat-btn-text pe-2">カテゴリーを全て見る</span>
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21">
-                                                <defs>
-                                                    <style>.a{fill:#c1454a;}.b{fill:none;stroke:#fff;stroke-width:3px;}</style>
-                                                </defs>
-                                                <g transform="translate(-0.443 -0.04)">
-                                                    <circle class="a" cx="10.5" cy="10.5" r="10.5" transform="translate(0.443 0.039)"></circle>
-                                                    <line class="b" x2="12.12" transform="translate(4.557 10.764)"></line>
-                                                    <line class="b" x2="12.12" transform="translate(10.617 4.704) rotate(90)"></line>
-                                                </g>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-                            </section>
                         </div>
                         <?php
                             $post_args = array(
                                 'post_type' => 'post',
                                 'posts_per_page' => $is_blog_search ? -1 : $posts_per_page,
                                 'post_status'    => 'publish',
-                                'category__and'  => array(get_category_by_slug('blog')->term_id),
+                                'category__and'  => array($blog_root_category->term_id),
                                 'orderby' => 'post_date',
                                 'order' => 'desc',
                             );
                             if ($is_blog_search) {
-                                $post_args['s'] = $blog_keyword;
+                                if ('' !== $blog_keyword) {
+                                    $post_args['s'] = $blog_keyword;
+                                }
+                                if ($selected_blog_category) {
+                                    $post_args['category__and'][] = $selected_blog_category->term_id;
+                                }
+                                if ('' !== $blog_month) {
+                                    $post_args['date_query'] = array(
+                                        array(
+                                            'year' => (int) substr($blog_month, 0, 4),
+                                            'month' => (int) substr($blog_month, 4, 2),
+                                        ),
+                                    );
+                                }
                             } else {
                                 $post_args['offset'] = 1;
                                 $post_args['date_query'] = array(
@@ -178,37 +199,84 @@ $is_blog_search = '' !== $blog_keyword;
                             <h2>記事一覧</h2>
                         </div>
                         <div class="row pt-5">
-                            <div class="col-12 col-lg-8">
-                                <section class="blog-search" aria-label="ブログ記事検索">
-                                    <details class="blog-search__panel" <?php if ($is_blog_search) echo 'open'; ?>>
-                                        <summary class="blog-search__summary">
+                            <aside class="col-12 col-lg-4 order-1 order-lg-2 blog-search-column">
+                                <section class="blog-search<?php if ($is_blog_search) echo ' is-open'; ?>" aria-label="ブログ記事検索">
+                                    <div class="blog-search__panel">
+                                        <h3 class="blog-search__heading blog-search__heading--desktop">
+                                            <span class="blog-search__dot" aria-hidden="true"></span>
+                                            <span>ブログ記事を探す</span>
+                                        </h3>
+                                        <button class="blog-search__toggle" type="button" aria-expanded="<?php echo $is_blog_search ? 'true' : 'false'; ?>" aria-controls="blog-search-form">
                                             <span class="blog-search__dot" aria-hidden="true"></span>
                                             <span>ブログ記事を探す</span>
                                             <svg class="blog-search__chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8" aria-hidden="true" focusable="false">
                                                 <path d="M1 1.25 6 6.25l5-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/>
                                             </svg>
-                                        </summary>
-                                        <form class="blog-search__form" method="get" action="<?php echo esc_url(get_permalink()); ?>">
+                                        </button>
+                                        <form id="blog-search-form" class="blog-search__form" method="get" action="<?php echo esc_url(get_permalink()); ?>">
                                             <label class="screen-reader-text" for="blog-keyword">ブログ記事のキーワード</label>
-                                            <div class="blog-search__controls">
-                                                <div class="blog-search__input-wrap">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
-                                                        <circle cx="8.25" cy="8.25" r="5.75" fill="none" stroke="currentColor" stroke-width="1.6"/>
-                                                        <path d="m12.5 12.5 4.5 4.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.6"/>
-                                                    </svg>
-                                                    <input id="blog-keyword" name="blog_keyword" type="search" value="<?php echo esc_attr($blog_keyword); ?>" placeholder="例：プルーン、レシピ、食育、宇宙">
-                                                </div>
-                                                <button type="submit">検索</button>
+                                            <div class="blog-search__input-wrap">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+                                                    <circle cx="8.25" cy="8.25" r="5.75" fill="none" stroke="currentColor" stroke-width="1.6"/>
+                                                    <path d="m12.5 12.5 4.5 4.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.6"/>
+                                                </svg>
+                                                <input id="blog-keyword" name="blog_keyword" type="search" value="<?php echo esc_attr($blog_keyword); ?>" placeholder="例：プルーン、レシピ、食育、宇宙">
                                             </div>
-                                            <?php if ($is_blog_search) : ?>
-                                                <div class="blog-search__status" aria-live="polite">
-                                                    <p class="mb-0">「<?php echo esc_html($blog_keyword); ?>」の検索結果：<?php echo count($posts); ?>件</p>
-                                                    <a href="<?php echo esc_url(get_permalink()); ?>#blog-search-results">検索条件をクリア</a>
+                                            <button class="blog-search__submit" type="submit">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+                                                    <circle cx="8.25" cy="8.25" r="5.75" fill="none" stroke="currentColor" stroke-width="1.8"/>
+                                                    <path d="m12.5 12.5 4.5 4.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"/>
+                                                </svg>
+                                                <span>検索する</span>
+                                            </button>
+
+                                            <fieldset class="blog-search__filter blog-search__categories">
+                                                <legend class="screen-reader-text">カテゴリー</legend>
+                                                <div class="blog-search__filter-heading">
+                                                    <span>カテゴリー</span>
+                                                    <span class="blog-search__selected"><?php echo $selected_blog_category ? esc_html($selected_blog_category->name) : 'すべて'; ?></span>
+                                                    <span class="blog-search__filter-arrow" aria-hidden="true"></span>
                                                 </div>
-                                            <?php endif; ?>
+                                                <div class="blog-search__choices">
+                                                    <label class="blog-search__choice<?php if ('' === $blog_category) echo ' is-active'; ?>">
+                                                        <input type="radio" name="blog_category" value="" <?php checked('', $blog_category); ?>>
+                                                        <span>すべて</span>
+                                                    </label>
+                                                    <?php foreach ($blog_child_categories as $index => $child_category) : ?>
+                                                        <label class="blog-search__choice<?php if ($blog_category === $child_category->slug) echo ' is-active'; ?><?php if ($index >= 5) echo ' blog-search__choice--extra'; ?>">
+                                                            <input type="radio" name="blog_category" value="<?php echo esc_attr($child_category->slug); ?>" <?php checked($blog_category, $child_category->slug); ?>>
+                                                            <span><?php echo esc_html($child_category->name); ?></span>
+                                                        </label>
+                                                    <?php endforeach; ?>
+                                                </div>
+                                                <?php if (count($blog_child_categories) > 5) : ?>
+                                                    <button class="blog-search__show-categories" type="button" aria-expanded="false">
+                                                        <span>カテゴリーを全て見る</span><b aria-hidden="true">＋</b>
+                                                    </button>
+                                                <?php endif; ?>
+                                            </fieldset>
+
+                                            <label class="blog-search__filter blog-search__month" for="blog-month">
+                                                <span class="blog-search__filter-label">年月</span>
+                                                <select id="blog-month" name="blog_month">
+                                                    <option value="">すべての年月</option>
+                                                    <?php foreach ($blog_archive_months as $month_value => $month_label) : ?>
+                                                        <option value="<?php echo esc_attr($month_value); ?>" <?php selected($blog_month, $month_value); ?>><?php echo esc_html($month_label); ?></option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                            </label>
+
+                                            <a class="blog-search__reset" href="<?php echo esc_url(get_permalink()); ?>#blog-search-results">
+                                                <span aria-hidden="true">↻</span>検索条件をリセット
+                                            </a>
                                         </form>
-                                    </details>
+                                    </div>
+                                    <?php if ($is_blog_search) : ?>
+                                        <p class="blog-search__status" aria-live="polite">検索結果：<?php echo count($posts); ?>件</p>
+                                    <?php endif; ?>
                                 </section>
+                            </aside>
+                            <div class="col-12 col-lg-8 order-2 order-lg-1 blog-results-column">
                                 <?php if ($posts) : ?>
                                     <span id="blog-search-results" class="blog-search-results__anchor" aria-hidden="true"></span>
                                     <div id="js_late_posts" class="pickup_columns blog-search-results">
@@ -237,18 +305,9 @@ $is_blog_search = '' !== $blog_keyword;
                                     </div>
                                 <?php else : ?>
                                     <div id="blog-search-results" class="blog-search-empty">
-                                        <p>該当するブログ記事はありません。キーワードを変えてお試しください。</p>
+                                        <p>該当するブログ記事はありません。検索条件を変えてお試しください。</p>
                                     </div>
                                 <?php endif; wp_reset_postdata(); ?>
-                            </div>
-                            <div class="col-12 col-lg-4">
-                                <div class="widget_side">
-                                    <div class="widget_content">
-                                        <div class="widget_body">
-                                            <?php get_template_part('template-parts/side/sidebar-blog') ?>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -354,6 +413,42 @@ $is_blog_search = '' !== $blog_keyword;
         </div>
 	</main><!-- #main -->
 </div><!-- #primary -->
+
+<script>
+(function () {
+    var search = document.querySelector('.screen_key_blog .blog-search');
+    if (!search) return;
+
+    var toggle = search.querySelector('.blog-search__toggle');
+    if (toggle) {
+        toggle.addEventListener('click', function () {
+            var isOpen = search.classList.toggle('is-open');
+            toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        });
+    }
+
+    var categoryToggle = search.querySelector('.blog-search__show-categories');
+    if (categoryToggle) {
+        categoryToggle.addEventListener('click', function () {
+            var isExpanded = search.classList.toggle('show-all-categories');
+            categoryToggle.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+            categoryToggle.querySelector('span').textContent = isExpanded ? 'カテゴリーを閉じる' : 'カテゴリーを全て見る';
+            categoryToggle.querySelector('b').textContent = isExpanded ? '−' : '＋';
+        });
+    }
+
+    var selectedCategory = search.querySelector('.blog-search__selected');
+    search.querySelectorAll('input[name="blog_category"]').forEach(function (radio) {
+        radio.addEventListener('change', function () {
+            search.querySelectorAll('.blog-search__choice').forEach(function (choice) {
+                choice.classList.remove('is-active');
+            });
+            radio.closest('.blog-search__choice').classList.add('is-active');
+            selectedCategory.textContent = radio.nextElementSibling.textContent;
+        });
+    });
+})();
+</script>
 
 <?php
 get_footer();
