@@ -1,7 +1,11 @@
-# This repository tracks only the Kirei 2026 deliverables.
+# Track the deployable page assets maintained in this repository.
 /*
 !/.gitignore
 !/README.md
+!/page-miki-blog.php
+!/style.scss
+!/style.css
+!/style.min.css
 !/page-kirei2026.php
 !/assets/
 /assets/*
