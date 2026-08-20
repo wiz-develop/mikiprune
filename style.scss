@@ -6388,6 +6388,56 @@ $border-light: 1px solid #eee;
             font-weight: 700;
             letter-spacing: .08em;
         }
+        &.is-search-result {
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eadfda;
+        }
+    }
+    .blog-result-summary {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem 1.5rem;
+        margin-top: .9rem;
+        color: #6f6b67;
+        font-size: .82rem;
+        &__count {
+            display: flex;
+            flex: 0 0 auto;
+            align-items: baseline;
+            gap: .4rem;
+            strong {
+                color: $red;
+                font-size: 1rem;
+            }
+        }
+        &__conditions {
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-end;
+            gap: .55rem;
+            min-width: 0;
+        }
+        &__label {
+            flex: 0 0 auto;
+            border: 1px solid $red;
+            border-radius: 50px;
+            padding: .15rem .6rem;
+            color: $red;
+            font-weight: 700;
+            line-height: 1.45;
+        }
+        &__list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: .3rem .7rem;
+            padding: 0;
+            list-style: none;
+            li {
+                line-height: 1.7;
+            }
+        }
     }
     .blog-search {
         margin-bottom: 2rem;
@@ -6562,10 +6612,17 @@ $border-light: 1px solid #eee;
                 outline-offset: 2px;
             }
             &:hover span,
-            &.is-active span {
+            &.is-active span,
+            input:checked + span {
                 border-color: #f48a61;
                 background-color: #f48a61;
                 color: #fff;
+            }
+            &.is-active span::before,
+            input:checked + span::before {
+                content: '✓';
+                margin-right: .3rem;
+                font-weight: 700;
             }
             &--extra:not(.is-active) {
                 display: none;
@@ -6712,6 +6769,24 @@ $border-light: 1px solid #eee;
             margin-bottom: 1rem;
             h2 {
                 font-size: 1.3rem;
+            }
+        }
+        .blog-result-summary {
+            display: block;
+            margin-top: .75rem;
+            &__conditions {
+                display: block;
+                margin-top: .65rem;
+            }
+            &__label {
+                display: table;
+                margin-bottom: .4rem;
+            }
+            &__list {
+                display: block;
+                li + li {
+                    margin-top: .15rem;
+                }
             }
         }
         .row.pt-5 {
