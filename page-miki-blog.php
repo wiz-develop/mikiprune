@@ -17,9 +17,13 @@ $posts_per_page = 6;
 $blog_keyword = isset($_GET['blog_keyword']) && is_string($_GET['blog_keyword'])
     ? sanitize_text_field(wp_unslash($_GET['blog_keyword']))
     : '';
-$blog_category = isset($_GET['blog_category']) && is_string($_GET['blog_category'])
-    ? sanitize_title(wp_unslash($_GET['blog_category']))
-    : '';
+$requested_blog_categories = isset($_GET['blog_category']) ? wp_unslash($_GET['blog_category']) : array();
+if (!is_array($requested_blog_categories)) {
+    $requested_blog_categories = array($requested_blog_categories);
+}
+$requested_blog_categories = array_values(array_unique(array_filter(array_map(function ($category_slug) {
+    return is_string($category_slug) ? sanitize_title($category_slug) : '';
+}, $requested_blog_categories))));
 $blog_month = isset($_GET['blog_month']) && is_string($_GET['blog_month'])
     ? sanitize_text_field(wp_unslash($_GET['blog_month']))
     : '';
@@ -36,18 +40,19 @@ $blog_child_categories = $blog_root_category ? get_categories(array(
     'order' => 'ASC',
     'hide_empty' => true,
 )) : array();
-$selected_blog_category = null;
+$selected_blog_categories = array();
 
 foreach ($blog_child_categories as $child_category) {
-    if ($blog_category === $child_category->slug) {
-        $selected_blog_category = $child_category;
-        break;
+    if (in_array($child_category->slug, $requested_blog_categories, true)) {
+        $selected_blog_categories[] = $child_category;
     }
 }
 
-if (!$selected_blog_category) {
-    $blog_category = '';
-}
+$blog_categories = wp_list_pluck($selected_blog_categories, 'slug');
+$selected_blog_category_names = wp_list_pluck($selected_blog_categories, 'name');
+$selected_blog_category_label = count($selected_blog_category_names) > 1
+    ? count($selected_blog_category_names).'件選択'
+    : ($selected_blog_category_names ? $selected_blog_category_names[0] : 'すべて');
 
 $blog_archive_months = array();
 if ($blog_root_category) {
@@ -70,7 +75,7 @@ if ($blog_root_category) {
     }
 }
 
-$is_blog_search = '' !== $blog_keyword || '' !== $blog_category || '' !== $blog_month;
+$is_blog_search = '' !== $blog_keyword || !empty($blog_categories) || '' !== $blog_month;
 // if (wp_is_mobile()) {
 //     $posts_per_page = 6;
 // } else {
@@ -88,6 +93,7 @@ $is_blog_search = '' !== $blog_keyword || '' !== $blog_category || '' !== $blog_
                     <div class="widget_content container">
                         <div class="d-lg-flex justify-content-between align-items-start">
                             <?php
+                                $latest_id = 0;
                                 $latest_post_args = array(
                                     'post_type' => 'post',
                                     'posts_per_page' => 1,
@@ -169,11 +175,14 @@ $is_blog_search = '' !== $blog_keyword || '' !== $blog_category || '' !== $blog_
                                 'order' => 'desc',
                             );
                             if ($is_blog_search) {
+                                if ($latest_id) {
+                                    $post_args['post__not_in'] = array($latest_id);
+                                }
                                 if ('' !== $blog_keyword) {
                                     $post_args['s'] = $blog_keyword;
                                 }
-                                if ($selected_blog_category) {
-                                    $post_args['category__and'][] = $selected_blog_category->term_id;
+                                if ($selected_blog_categories) {
+                                    $post_args['category__in'] = wp_list_pluck($selected_blog_categories, 'term_id');
                                 }
                                 if ('' !== $blog_month) {
                                     $post_args['date_query'] = array(
@@ -194,9 +203,39 @@ $is_blog_search = '' !== $blog_keyword || '' !== $blog_category || '' !== $blog_
                                 );
                             }
                             $posts = get_posts($post_args);
+                            $result_total_count = count($posts);
+                            $result_display_count = count($posts);
+                            $search_condition_labels = array();
+
+                            if ('' !== $blog_keyword) {
+                                $search_condition_labels[] = 'キーワード：'.$blog_keyword;
+                            }
+                            if ($selected_blog_category_names) {
+                                $search_condition_labels[] = 'カテゴリー：'.implode('、', $selected_blog_category_names);
+                            }
+                            if ('' !== $blog_month) {
+                                $search_condition_labels[] = '年月：'.($blog_archive_months[$blog_month] ?? substr($blog_month, 0, 4).'年'.(int) substr($blog_month, 4, 2).'月');
+                            }
                         ?>
-                        <div class="blog-list-heading">
-                            <h2>記事一覧</h2>
+                        <div class="blog-list-heading<?php if ($is_blog_search) echo ' is-search-result'; ?>">
+                            <h2><?php echo $is_blog_search ? '検索結果' : '記事一覧'; ?></h2>
+                            <?php if ($is_blog_search) : ?>
+                                <div class="blog-result-summary" aria-live="polite">
+                                    <p class="blog-result-summary__count mb-0">
+                                        <span><?php echo esc_html($result_total_count); ?>件中</span>
+                                        <span aria-hidden="true">/</span>
+                                        <strong><?php echo esc_html($result_display_count); ?>件</strong>
+                                    </p>
+                                    <div class="blog-result-summary__conditions">
+                                        <span class="blog-result-summary__label">検索条件</span>
+                                        <ul class="blog-result-summary__list mb-0">
+                                            <?php foreach ($search_condition_labels as $condition_label) : ?>
+                                                <li><?php echo esc_html($condition_label); ?></li>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <div class="row pt-5">
                             <aside class="col-12 col-lg-4 order-1 order-lg-2 blog-search-column">
@@ -234,17 +273,17 @@ $is_blog_search = '' !== $blog_keyword || '' !== $blog_category || '' !== $blog_
                                                 <legend class="screen-reader-text">カテゴリー</legend>
                                                 <div class="blog-search__filter-heading">
                                                     <span>カテゴリー</span>
-                                                    <span class="blog-search__selected"><?php echo $selected_blog_category ? esc_html($selected_blog_category->name) : 'すべて'; ?></span>
+                                                    <span class="blog-search__selected"><?php echo esc_html($selected_blog_category_label); ?></span>
                                                     <span class="blog-search__filter-arrow" aria-hidden="true"></span>
                                                 </div>
                                                 <div class="blog-search__choices">
-                                                    <label class="blog-search__choice<?php if ('' === $blog_category) echo ' is-active'; ?>">
-                                                        <input type="radio" name="blog_category" value="" <?php checked('', $blog_category); ?>>
+                                                    <label class="blog-search__choice blog-search__choice--all<?php if (!$blog_categories) echo ' is-active'; ?>">
+                                                        <input type="checkbox" value="" data-all-categories <?php checked(empty($blog_categories)); ?>>
                                                         <span>すべて</span>
                                                     </label>
                                                     <?php foreach ($blog_child_categories as $index => $child_category) : ?>
-                                                        <label class="blog-search__choice<?php if ($blog_category === $child_category->slug) echo ' is-active'; ?><?php if ($index >= 5) echo ' blog-search__choice--extra'; ?>">
-                                                            <input type="radio" name="blog_category" value="<?php echo esc_attr($child_category->slug); ?>" <?php checked($blog_category, $child_category->slug); ?>>
+                                                        <label class="blog-search__choice<?php if (in_array($child_category->slug, $blog_categories, true)) echo ' is-active'; ?><?php if ($index >= 5) echo ' blog-search__choice--extra'; ?>">
+                                                            <input type="checkbox" name="blog_category[]" value="<?php echo esc_attr($child_category->slug); ?>" <?php checked(in_array($child_category->slug, $blog_categories, true)); ?>>
                                                             <span><?php echo esc_html($child_category->name); ?></span>
                                                         </label>
                                                     <?php endforeach; ?>
@@ -275,9 +314,6 @@ $is_blog_search = '' !== $blog_keyword || '' !== $blog_category || '' !== $blog_
                                             </a>
                                         </form>
                                     </div>
-                                    <?php if ($is_blog_search) : ?>
-                                        <p class="blog-search__status" aria-live="polite">検索結果：<?php echo count($posts); ?>件</p>
-                                    <?php endif; ?>
                                 </section>
                             </aside>
                             <div class="col-12 col-lg-8 order-2 order-lg-1 blog-results-column">
@@ -442,13 +478,44 @@ $is_blog_search = '' !== $blog_keyword || '' !== $blog_category || '' !== $blog_
     }
 
     var selectedCategory = search.querySelector('.blog-search__selected');
-    search.querySelectorAll('input[name="blog_category"]').forEach(function (radio) {
-        radio.addEventListener('change', function () {
-            search.querySelectorAll('.blog-search__choice').forEach(function (choice) {
-                choice.classList.remove('is-active');
+    var allCategory = search.querySelector('[data-all-categories]');
+    var categoryCheckboxes = Array.prototype.slice.call(search.querySelectorAll('input[name="blog_category[]"]'));
+
+    function syncCategoryState() {
+        var checkedCategories = categoryCheckboxes.filter(function (checkbox) {
+            return checkbox.checked;
+        });
+
+        allCategory.checked = checkedCategories.length === 0;
+        allCategory.closest('.blog-search__choice').classList.toggle('is-active', allCategory.checked);
+        categoryCheckboxes.forEach(function (checkbox) {
+            checkbox.closest('.blog-search__choice').classList.toggle('is-active', checkbox.checked);
+        });
+
+        if (checkedCategories.length === 0) {
+            selectedCategory.textContent = 'すべて';
+        } else if (checkedCategories.length === 1) {
+            selectedCategory.textContent = checkedCategories[0].nextElementSibling.textContent;
+        } else {
+            selectedCategory.textContent = checkedCategories.length + '件選択';
+        }
+    }
+
+    allCategory.addEventListener('change', function () {
+        if (allCategory.checked) {
+            categoryCheckboxes.forEach(function (checkbox) {
+                checkbox.checked = false;
             });
-            radio.closest('.blog-search__choice').classList.add('is-active');
-            selectedCategory.textContent = radio.nextElementSibling.textContent;
+        }
+        syncCategoryState();
+    });
+
+    categoryCheckboxes.forEach(function (checkbox) {
+        checkbox.addEventListener('change', function () {
+            if (checkbox.checked) {
+                allCategory.checked = false;
+            }
+            syncCategoryState();
         });
     });
 })();
