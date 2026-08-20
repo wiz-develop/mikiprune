@@ -7,15 +7,25 @@
 
     $contributor = strip_tags(get_post_meta(get_the_ID(), 'blog-contributor', true));
     $card_category_name = '';
+    $card_category_fallback = '';
     $blog_root_category = get_category_by_slug('blog');
     $post_categories = get_the_category();
 
     if ($blog_root_category && $post_categories) {
         foreach ($post_categories as $post_category) {
             if ($post_category->term_id !== $blog_root_category->term_id && cat_is_ancestor_of($blog_root_category, $post_category)) {
+                if ('blog-mikiprune' === $post_category->slug) {
+                    $card_category_fallback = $post_category->name;
+                    continue;
+                }
+
                 $card_category_name = $post_category->name;
                 break;
             }
+        }
+
+        if ('' === $card_category_name) {
+            $card_category_name = $card_category_fallback;
         }
     }
 ?>
