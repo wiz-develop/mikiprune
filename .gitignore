@@ -1,0 +1,22 @@
+# This repository tracks only the Kirei 2026 deliverables.
+/*
+!/.gitignore
+!/README.md
+!/page-kirei2026.php
+!/assets/
+/assets/*
+!/assets/css/
+/assets/css/*
+!/assets/css/kirei2026.css
+!/assets/js/
+/assets/js/*
+!/assets/js/kirei2026.js
+!/assets/image/
+/assets/image/*
+!/assets/image/kirei2026/
+!/assets/image/kirei2026/*.jpg
+!/assets/image/kirei2026/*.png
+!/kirei2026/
+/kirei2026/*
+!/kirei2026/CFS_FIELDS.md
+!/kirei2026/sync-wordpress.php

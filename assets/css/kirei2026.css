@@ -1,0 +1,672 @@
+:root {
+	--kirei-pearl: #fdfbfc;
+	--kirei-blush: #f7edf1;
+	--kirei-rose: #941f46;
+	--kirei-pink: #d98ba3;
+	--kirei-ink: #2c2730;
+	--kirei-gold: #b79a56;
+	--kirei-green: #526d54;
+	--kirei-blue: #47668d;
+}
+
+.kirei2026,
+.kirei2026 * {
+	box-sizing: border-box;
+}
+
+.kirei2026 {
+	background: var(--kirei-pearl);
+	color: var(--kirei-ink);
+	font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+	overflow: hidden;
+}
+
+.kirei2026 h1::before,
+.kirei2026 h2::before {
+	display: none !important;
+}
+
+.kirei2026 img {
+	display: block;
+	max-width: 100%;
+}
+
+.kirei2026-container {
+	margin: 0 auto;
+	max-width: 1120px;
+	padding: 0 32px;
+}
+
+.kirei2026-hero {
+	align-items: center;
+	background:
+		radial-gradient(circle at 50% 45%, rgba(255, 255, 255, .98) 0 18%, rgba(253, 251, 252, .62) 55%, rgba(247, 237, 241, .82) 100%),
+		linear-gradient(135deg, #fff 0%, var(--kirei-blush) 100%);
+	display: flex;
+	isolation: isolate;
+	justify-content: center;
+	min-height: 690px;
+	position: relative;
+}
+
+.kirei2026-hero::before,
+.kirei2026-hero::after {
+	border: 1px solid rgba(148, 31, 70, .18);
+	border-radius: 50%;
+	content: "";
+	left: 50%;
+	pointer-events: none;
+	position: absolute;
+	top: 49%;
+	transform: translate(-50%, -50%);
+}
+
+.kirei2026-hero::before {
+	height: 410px;
+	width: 410px;
+}
+
+.kirei2026-hero::after {
+	border-color: rgba(183, 154, 86, .28);
+	height: 470px;
+	width: 470px;
+}
+
+.kirei2026-hero__inner {
+	position: relative;
+	text-align: center;
+	z-index: 2;
+}
+
+.kirei2026-hero__title {
+	margin: 0 auto;
+	max-width: 840px;
+	padding: 0 24px;
+	width: 84vw;
+}
+
+.kirei2026-hero__title img {
+	height: auto;
+	width: 100%;
+}
+
+.kirei2026-petal {
+	background: linear-gradient(145deg, rgba(217, 139, 163, .22), rgba(255, 255, 255, .08));
+	border-radius: 80% 20% 74% 26% / 78% 34% 66% 22%;
+	filter: blur(.2px);
+	height: 380px;
+	pointer-events: none;
+	position: absolute;
+	width: 250px;
+	z-index: 1;
+}
+
+.kirei2026-petal--one {
+	left: -70px;
+	top: 10%;
+	transform: rotate(28deg);
+}
+
+.kirei2026-petal--two {
+	background: linear-gradient(145deg, rgba(183, 154, 86, .16), rgba(255, 255, 255, .04));
+	bottom: 4%;
+	right: -50px;
+	transform: rotate(205deg);
+}
+
+.kirei2026-scroll-cue {
+	align-items: center;
+	bottom: -155px;
+	color: var(--kirei-ink);
+	display: flex;
+	flex-direction: column;
+	font-family: "Iowan Old Style", Georgia, serif;
+	font-size: 11px;
+	gap: 10px;
+	left: 50%;
+	letter-spacing: .14em;
+	position: absolute;
+	text-decoration: none;
+	text-transform: uppercase;
+	transform: translateX(-50%);
+}
+
+.kirei2026-scroll-cue i {
+	background: var(--kirei-rose);
+	display: block;
+	height: 46px;
+	width: 1px;
+}
+
+.kirei2026-section-heading {
+	margin-bottom: 52px;
+	text-align: center;
+}
+
+.kirei2026-section-heading > p {
+	color: var(--kirei-rose);
+	font-family: "Iowan Old Style", Georgia, serif;
+	font-size: 12px;
+	letter-spacing: .22em;
+	margin: 0 0 14px;
+	text-transform: uppercase;
+}
+
+.kirei2026-section-heading h2 {
+	font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+	font-size: clamp(28px, 4vw, 42px);
+	font-weight: 500;
+	letter-spacing: .14em;
+	line-height: 1.4;
+	margin: 0;
+}
+
+.kirei2026-schedule {
+	background: #fff;
+	box-shadow: none;
+	filter: none;
+	padding: 112px 0 124px;
+}
+
+.kirei2026-schedule .kirei2026-section-heading,
+.kirei2026-schedule .kirei2026-section-heading h2 {
+	box-shadow: none;
+	filter: none;
+	text-shadow: none;
+}
+
+.kirei2026-schedule__list {
+	border-top: 1px solid rgba(44, 39, 48, .16);
+}
+
+.kirei2026-date-card {
+	align-items: center;
+	border-bottom: 1px solid rgba(44, 39, 48, .16);
+	display: grid;
+	gap: 28px;
+	grid-template-columns: 52px minmax(0, 1fr) auto;
+	min-height: 152px;
+	padding: 26px 8px;
+	position: relative;
+}
+
+.kirei2026-date-card__number {
+	color: rgba(148, 31, 70, .36);
+	font-family: "Bodoni 72", Didot, serif;
+	font-size: 21px;
+	letter-spacing: .08em;
+}
+
+.kirei2026-date-card__place h3 {
+	font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+	font-size: 22px;
+	font-weight: 600;
+	letter-spacing: .08em;
+	margin: 0 0 12px;
+}
+
+.kirei2026-date-card__place p {
+	font-size: 14px;
+	letter-spacing: .04em;
+	line-height: 1.8;
+	margin: 0;
+}
+
+.kirei2026-date-card__place p span {
+	color: var(--kirei-rose);
+	font-size: 11px;
+	letter-spacing: .12em;
+	margin-right: 14px;
+}
+
+.kirei2026-date-card__schedule {
+	justify-self: end;
+	text-align: center;
+}
+
+.kirei2026-date-card__date {
+	align-items: center;
+	display: flex;
+	font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+	margin: 0;
+	white-space: nowrap;
+}
+
+.kirei2026-date-card__date strong {
+	font-family: "Bodoni 72", Didot, serif;
+	font-size: clamp(48px, 6vw, 72px);
+	font-weight: 400;
+	letter-spacing: -.025em;
+}
+
+.kirei2026-date-card__date span {
+	font-size: 18px;
+	margin-left: 10px;
+}
+
+.kirei2026-date-card__time {
+	color: var(--kirei-rose);
+	font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+	font-size: 22px;
+	font-weight: 500;
+	letter-spacing: .08em;
+	line-height: 1.5;
+	margin: 0;
+}
+
+.kirei2026-date-card__links {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	grid-column: 2 / -1;
+	margin-top: -16px;
+}
+
+.kirei2026-date-card__links a {
+	border: 1px solid rgba(148, 31, 70, .28);
+	border-radius: 99px;
+	color: var(--kirei-rose);
+	font-size: 12px;
+	padding: 7px 13px;
+	text-decoration: none;
+	transition: background-color .2s ease, color .2s ease;
+}
+
+.kirei2026-date-card__links a:hover,
+.kirei2026-date-card__links a:focus-visible {
+	background: var(--kirei-rose);
+	color: #fff;
+}
+
+.kirei2026-note {
+	color: var(--kirei-rose);
+	font-size: 15px;
+	letter-spacing: .04em;
+	line-height: 1.8;
+	margin: 28px 0 0;
+	text-align: center;
+}
+
+.kirei2026-program {
+	background: var(--kirei-ink);
+	color: #fff;
+	padding: 124px 0 132px;
+	position: relative;
+}
+
+.kirei2026-program::before {
+	background: linear-gradient(90deg, var(--kirei-rose) 0 33.33%, var(--kirei-green) 33.33% 66.66%, var(--kirei-blue) 66.66%);
+	content: "";
+	height: 4px;
+	left: 0;
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+
+.kirei2026-section-heading--light > p {
+	color: rgba(255, 255, 255, .58);
+}
+
+.kirei2026-program__list {
+	display: grid;
+	gap: 28px;
+}
+
+.kirei2026-program-card {
+	--program-accent: var(--kirei-rose);
+	background: #fff;
+	color: var(--kirei-ink);
+	display: grid;
+	grid-template-columns: minmax(300px, 46%) minmax(0, 1fr);
+	min-height: 340px;
+	overflow: hidden;
+}
+
+.kirei2026-program-card:nth-child(even) .kirei2026-program-card__media {
+	grid-column: 2;
+	grid-row: 1;
+}
+
+.kirei2026-program-card:nth-child(even) .kirei2026-program-card__body {
+	grid-column: 1;
+	grid-row: 1;
+}
+
+.kirei2026-program-card.is-green {
+	--program-accent: var(--kirei-green);
+}
+
+.kirei2026-program-card.is-blue {
+	--program-accent: var(--kirei-blue);
+}
+
+.kirei2026-program-card__media {
+	background: var(--program-accent);
+	min-height: 340px;
+	overflow: hidden;
+	position: relative;
+}
+
+.kirei2026-program-card__media::after {
+	background: linear-gradient(180deg, transparent 50%, rgba(44, 39, 48, .3));
+	content: "";
+	inset: 0;
+	pointer-events: none;
+	position: absolute;
+}
+
+.kirei2026-program-card__media img {
+	height: 100%;
+	object-fit: cover;
+	transition: transform .8s cubic-bezier(.2, .7, .2, 1);
+	width: 100%;
+}
+
+.kirei2026-program-card:hover .kirei2026-program-card__media img {
+	transform: scale(1.025);
+}
+
+.kirei2026-program-card__media > span {
+	bottom: 24px;
+	color: #fff;
+	font-family: "Bodoni 72", Didot, serif;
+	font-size: 20px;
+	left: 26px;
+	letter-spacing: .16em;
+	position: absolute;
+	z-index: 1;
+}
+
+.kirei2026-program-card__body {
+	align-self: center;
+	padding: 46px clamp(32px, 6vw, 72px);
+}
+
+.kirei2026-program-card__lead {
+	color: var(--program-accent);
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: .12em;
+	margin: 0 0 16px;
+}
+
+.kirei2026-program-card__body h3 {
+	color: var(--program-accent);
+	font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+	font-size: clamp(42px, 5vw, 66px);
+	font-weight: 500;
+	letter-spacing: .14em;
+	line-height: 1;
+	margin: 0 0 24px;
+}
+
+.kirei2026-program-card__body h4 {
+	font-size: clamp(17px, 2vw, 21px);
+	font-weight: 600;
+	letter-spacing: .07em;
+	line-height: 1.65;
+	margin: 0 0 14px;
+}
+
+.kirei2026-program-card__description {
+	color: #615b63;
+	font-size: 14px;
+	letter-spacing: .025em;
+	line-height: 2;
+	margin: 0;
+}
+
+.kirei2026-note--light {
+	color: rgba(255, 255, 255, .62);
+	margin-top: 34px;
+}
+
+.kirei2026-guest {
+	background: var(--kirei-blush);
+	padding: 120px 0;
+}
+
+.kirei2026-guest__inner {
+	align-items: center;
+	display: grid;
+	gap: clamp(44px, 8vw, 100px);
+	grid-template-columns: minmax(260px, 38%) minmax(0, 1fr);
+}
+
+.kirei2026-guest__image {
+	box-shadow: 24px 24px 0 #fff;
+	min-height: 430px;
+}
+
+.kirei2026-guest__image img {
+	height: 100%;
+	min-height: 430px;
+	object-fit: cover;
+	width: 100%;
+}
+
+.kirei2026-guest__label {
+	color: var(--kirei-rose);
+	font-family: "Iowan Old Style", Georgia, serif;
+	font-size: 12px;
+	letter-spacing: .2em;
+	margin: 0 0 14px;
+	text-transform: uppercase;
+}
+
+.kirei2026-guest__body h2 {
+	font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+	font-size: clamp(28px, 4vw, 42px);
+	font-weight: 500;
+	letter-spacing: .1em;
+	margin: 0 0 38px;
+}
+
+.kirei2026-guest__body h3 {
+	font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+	font-size: 30px;
+	font-weight: 500;
+	letter-spacing: .08em;
+	margin: 0 0 8px;
+}
+
+.kirei2026-guest__role {
+	color: var(--kirei-rose);
+	font-size: 13px;
+	margin: 0 0 26px;
+}
+
+.kirei2026-guest__profile {
+	font-size: 14px;
+	letter-spacing: .03em;
+	line-height: 2.1;
+}
+
+.kirei2026-guest__profile p:last-child {
+	margin-bottom: 0;
+}
+
+.kirei2026-closing {
+	background: #fff;
+	padding: 100px 24px;
+	text-align: center;
+}
+
+.kirei2026-closing p {
+	font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+	font-size: clamp(22px, 3.2vw, 36px);
+	letter-spacing: .12em;
+	line-height: 1.8;
+	margin: 0 0 24px;
+}
+
+.kirei2026-closing span {
+	color: var(--kirei-gold);
+	font-family: "Iowan Old Style", Georgia, serif;
+	font-size: 12px;
+	letter-spacing: .2em;
+	text-transform: uppercase;
+}
+
+.kirei2026.kirei-ready [data-kirei-reveal] {
+	opacity: 0;
+	transform: translateY(30px);
+	transition: opacity .75s ease, transform .75s cubic-bezier(.2, .7, .2, 1);
+}
+
+.kirei2026.kirei-ready [data-kirei-reveal].is-visible {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+.kirei2026 a:focus-visible {
+	outline: 3px solid rgba(148, 31, 70, .42);
+	outline-offset: 4px;
+}
+
+@media (max-width: 767px) {
+	.kirei2026-container {
+		padding: 0 20px;
+	}
+
+	.kirei2026-hero {
+		min-height: 620px;
+	}
+
+	.kirei2026-hero::before {
+		height: 300px;
+		width: 300px;
+	}
+
+	.kirei2026-hero::after {
+		height: 350px;
+		width: 350px;
+	}
+
+	.kirei2026-hero__title {
+		padding: 0 12px;
+		width: 94vw;
+	}
+
+	.kirei2026-scroll-cue {
+		bottom: -125px;
+	}
+
+	.kirei2026-schedule {
+		padding: 88px 0 96px;
+	}
+
+	.kirei2026-section-heading {
+		margin-bottom: 38px;
+	}
+
+	.kirei2026-date-card {
+		gap: 8px 12px;
+		grid-template-columns: 34px minmax(0, 1fr) auto;
+		min-height: 0;
+		padding: 25px 0;
+	}
+
+	.kirei2026-date-card__number {
+		font-size: 15px;
+	}
+
+	.kirei2026-date-card__place h3 {
+		font-size: 17px;
+	}
+
+	.kirei2026-date-card__place p {
+		font-size: 12px;
+	}
+
+	.kirei2026-date-card__place p span {
+		display: block;
+		margin-bottom: 2px;
+	}
+
+	.kirei2026-date-card__date {
+		align-items: flex-end;
+		flex-direction: column;
+	}
+
+	.kirei2026-date-card__date strong {
+		font-size: 38px;
+	}
+
+	.kirei2026-date-card__date span {
+		font-size: 13px;
+		margin-left: 0;
+	}
+
+	.kirei2026-date-card__time {
+		font-size: 18px;
+		letter-spacing: .03em;
+		margin-top: 4px;
+		text-align: right;
+	}
+
+	.kirei2026-date-card__links {
+		grid-column: 2 / -1;
+		margin-top: 8px;
+	}
+
+	.kirei2026-program {
+		padding: 92px 0 100px;
+	}
+
+	.kirei2026-program-card,
+	.kirei2026-program-card:nth-child(even) {
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
+	}
+
+	.kirei2026-program-card__media,
+	.kirei2026-program-card:nth-child(even) .kirei2026-program-card__media {
+		aspect-ratio: 16 / 10;
+		min-height: 0;
+		order: 0;
+	}
+
+	.kirei2026-program-card__body,
+	.kirei2026-program-card:nth-child(even) .kirei2026-program-card__body {
+		order: 1;
+		padding: 34px 26px 40px;
+	}
+
+	.kirei2026-program-card__body h3 {
+		font-size: 44px;
+	}
+
+	.kirei2026-guest {
+		padding: 88px 0;
+	}
+
+	.kirei2026-guest__inner {
+		grid-template-columns: 1fr;
+	}
+
+	.kirei2026-guest__image,
+	.kirei2026-guest__image img {
+		min-height: 360px;
+	}
+
+	.kirei2026-closing {
+		padding: 78px 24px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.kirei2026 *,
+	.kirei2026 *::before,
+	.kirei2026 *::after {
+		scroll-behavior: auto !important;
+		transition-duration: .01ms !important;
+	}
+
+	.kirei2026.kirei-ready [data-kirei-reveal] {
+		opacity: 1;
+		transform: none;
+	}
+}
