@@ -14,6 +14,10 @@ get_header();
 
 $blog_about = CFS()->get('blog_about');
 $posts_per_page = 6;
+$search_posts_per_page = 9;
+$blog_page = isset($_GET['blog_page']) && is_scalar($_GET['blog_page'])
+    ? max(1, absint($_GET['blog_page']))
+    : 1;
 $blog_keyword = isset($_GET['blog_keyword']) && is_string($_GET['blog_keyword'])
     ? sanitize_text_field(wp_unslash($_GET['blog_keyword']))
     : '';
@@ -110,8 +114,8 @@ $is_blog_search = '' !== $blog_keyword || !empty($blog_categories) || '' !== $bl
                                     ),
                                 );
                                 $latest_posts = get_posts($latest_post_args);
-                                if ($latest_posts) : setup_postdata($latest_posts[0]);
-                                    $latest_id = $latest_posts[0]->ID;
+                                $latest_id = $latest_posts ? $latest_posts[0]->ID : 0;
+                                if (!$is_blog_search && $latest_posts) : setup_postdata($latest_posts[0]);
                                     $title = strip_tags(get_the_title($latest_id));
                                     $limit = 30;
                                     if(mb_strlen($title) > $limit) { 
@@ -168,7 +172,8 @@ $is_blog_search = '' !== $blog_keyword || !empty($blog_categories) || '' !== $bl
                         <?php
                             $post_args = array(
                                 'post_type' => 'post',
-                                'posts_per_page' => $is_blog_search ? -1 : $posts_per_page,
+                                'posts_per_page' => $is_blog_search ? $search_posts_per_page : $posts_per_page,
+                                'paged' => $is_blog_search ? $blog_page : 1,
                                 'post_status'    => 'publish',
                                 'category__and'  => array($blog_root_category->term_id),
                                 'orderby' => 'post_date',
@@ -202,8 +207,9 @@ $is_blog_search = '' !== $blog_keyword || !empty($blog_categories) || '' !== $bl
                                     ),
                                 );
                             }
-                            $posts = get_posts($post_args);
-                            $result_total_count = count($posts);
+                            $blog_posts_query = new WP_Query($post_args);
+                            $posts = $blog_posts_query->posts;
+                            $result_total_count = $is_blog_search ? (int) $blog_posts_query->found_posts : count($posts);
                             $result_display_count = count($posts);
                             $search_condition_labels = array();
 
@@ -343,6 +349,35 @@ $is_blog_search = '' !== $blog_keyword || !empty($blog_categories) || '' !== $bl
                                         </div>
                                         <?php endif; ?>
                                     </div>
+                                    <?php if ($is_blog_search && $blog_posts_query->max_num_pages > 1) : ?>
+                                        <?php
+                                            $pagination_add_args = array();
+                                            if ('' !== $blog_keyword) {
+                                                $pagination_add_args['blog_keyword'] = $blog_keyword;
+                                            }
+                                            if ($blog_categories) {
+                                                $pagination_add_args['blog_category'] = $blog_categories;
+                                            }
+                                            if ('' !== $blog_month) {
+                                                $pagination_add_args['blog_month'] = $blog_month;
+                                            }
+                                        ?>
+                                        <nav class="blog-pagination" aria-label="検索結果ページ">
+                                            <?php
+                                                echo paginate_links(array(
+                                                    'base' => trailingslashit(get_permalink()).'%_%',
+                                                    'format' => '?blog_page=%#%',
+                                                    'current' => $blog_page,
+                                                    'total' => $blog_posts_query->max_num_pages,
+                                                    'type' => 'list',
+                                                    'prev_text' => '前へ',
+                                                    'next_text' => '次へ',
+                                                    'add_args' => $pagination_add_args,
+                                                    'add_fragment' => '#blog-search-results',
+                                                ));
+                                            ?>
+                                        </nav>
+                                    <?php endif; ?>
                                 <?php else : ?>
                                     <div id="blog-search-results" class="blog-search-empty">
                                         <p>該当するブログ記事はありません。検索条件を変えてお試しください。</p>
@@ -353,6 +388,7 @@ $is_blog_search = '' !== $blog_keyword || !empty($blog_categories) || '' !== $bl
                     </div>
                 </div>
             </section>
+            <?php if (!$is_blog_search) : ?>
             <section class="pt-5">
                 <div class="widget_type_page_title screen_widget_key_page_title mb-3">
                     <div class="widget_content container">
@@ -450,6 +486,7 @@ $is_blog_search = '' !== $blog_keyword || !empty($blog_categories) || '' !== $bl
                     </div>
                 </section>
             </section>
+            <?php endif; ?>
         </div>
 	</main><!-- #main -->
 </div><!-- #primary -->
