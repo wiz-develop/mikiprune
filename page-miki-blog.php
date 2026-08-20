@@ -267,7 +267,11 @@ $is_blog_search = '' !== $blog_keyword || '' !== $blog_category || '' !== $blog_
                                             </label>
 
                                             <a class="blog-search__reset" href="<?php echo esc_url(get_permalink()); ?>#blog-search-results">
-                                                <span aria-hidden="true">↻</span>検索条件をリセット
+                                                <svg class="blog-search__reset-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+                                                    <path d="M4.3 6.1A6.5 6.5 0 1 1 3.2 12" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.6"/>
+                                                    <path d="M4.3 2.7v3.4H.9" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"/>
+                                                </svg>
+                                                <span class="blog-search__reset-text">検索条件をリセット</span>
                                             </a>
                                         </form>
                                     </div>
