@@ -22,6 +22,11 @@ $blog_page = isset($_GET['blog_page']) && is_scalar($_GET['blog_page'])
 $blog_keyword = isset($_GET['blog_keyword']) && is_string($_GET['blog_keyword'])
     ? sanitize_text_field(wp_unslash($_GET['blog_keyword']))
     : '';
+$blog_search_keyword = preg_replace('/[\s　,，、]+/u', ' ', trim($blog_keyword));
+$blog_search_keyword = is_string($blog_search_keyword) ? trim($blog_search_keyword) : '';
+$blog_keyword_terms = '' !== $blog_search_keyword ? preg_split('/\s+/u', $blog_search_keyword, -1, PREG_SPLIT_NO_EMPTY) : array();
+$blog_keyword_terms = is_array($blog_keyword_terms) ? array_values(array_unique($blog_keyword_terms)) : array();
+$blog_keyword_label = implode('、', $blog_keyword_terms);
 $requested_blog_categories = isset($_GET['blog_category']) ? wp_unslash($_GET['blog_category']) : array();
 if (!is_array($requested_blog_categories)) {
     $requested_blog_categories = array($requested_blog_categories);
@@ -80,7 +85,7 @@ if ($blog_root_category) {
     }
 }
 
-$is_blog_search = '' !== $blog_keyword || !empty($blog_categories) || '' !== $blog_month;
+$is_blog_search = '' !== $blog_search_keyword || !empty($blog_categories) || '' !== $blog_month;
 // if (wp_is_mobile()) {
 //     $posts_per_page = 6;
 // } else {
@@ -202,7 +207,15 @@ $is_blog_search = '' !== $blog_keyword || !empty($blog_categories) || '' !== $bl
                                 'posts_per_page' => $is_blog_search ? $search_posts_per_page : $posts_per_page,
                                 'paged' => $is_blog_search ? $blog_page : 1,
                                 'post_status'    => 'publish',
-                                'category__and'  => array($blog_root_category->term_id),
+                                'tax_query'      => array(
+                                    array(
+                                        'taxonomy'         => 'category',
+                                        'field'            => 'term_id',
+                                        'terms'            => array($blog_root_category->term_id),
+                                        'operator'         => 'IN',
+                                        'include_children' => false,
+                                    ),
+                                ),
                                 'orderby' => 'post_date',
                                 'order' => 'desc',
                             );
@@ -210,11 +223,18 @@ $is_blog_search = '' !== $blog_keyword || !empty($blog_categories) || '' !== $bl
                                 if ($latest_id) {
                                     $post_args['post__not_in'] = array($latest_id);
                                 }
-                                if ('' !== $blog_keyword) {
-                                    $post_args['s'] = $blog_keyword;
+                                if ('' !== $blog_search_keyword) {
+                                    $post_args['s'] = $blog_search_keyword;
                                 }
                                 if ($selected_blog_categories) {
-                                    $post_args['category__in'] = wp_list_pluck($selected_blog_categories, 'term_id');
+                                    $post_args['tax_query']['relation'] = 'AND';
+                                    $post_args['tax_query'][] = array(
+                                        'taxonomy'         => 'category',
+                                        'field'            => 'term_id',
+                                        'terms'            => wp_list_pluck($selected_blog_categories, 'term_id'),
+                                        'operator'         => 'IN',
+                                        'include_children' => false,
+                                    );
                                 }
                                 if ('' !== $blog_month) {
                                     $post_args['date_query'] = array(
@@ -240,8 +260,8 @@ $is_blog_search = '' !== $blog_keyword || !empty($blog_categories) || '' !== $bl
                             $result_display_count = count($posts);
                             $search_condition_labels = array();
 
-                            if ('' !== $blog_keyword) {
-                                $search_condition_labels[] = 'キーワード：'.$blog_keyword;
+                            if ('' !== $blog_keyword_label) {
+                                $search_condition_labels[] = 'キーワード：'.$blog_keyword_label;
                             }
                             if ($selected_blog_category_names) {
                                 $search_condition_labels[] = 'カテゴリー：'.implode('、', $selected_blog_category_names);
