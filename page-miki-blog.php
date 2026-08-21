@@ -125,6 +125,27 @@ $is_blog_search = '' !== $blog_keyword || !empty($blog_categories) || '' !== $bl
 
                                     $contributor = strip_tags(get_post_meta( $latest_id, 'blog-contributor', true ));
                                     $blog_summary = get_post_meta( $latest_id, 'blog-summary', true );
+                                    $latest_category_name = '';
+                                    $latest_category_fallback = '';
+                                    $latest_categories = get_the_category($latest_id);
+
+                                    if ($blog_root_category && $latest_categories) {
+                                        foreach ($latest_categories as $latest_category) {
+                                            if ($latest_category->term_id !== $blog_root_category->term_id && cat_is_ancestor_of($blog_root_category, $latest_category)) {
+                                                if ('blog-mikiprune' === $latest_category->slug) {
+                                                    $latest_category_fallback = $latest_category->name;
+                                                    continue;
+                                                }
+
+                                                $latest_category_name = $latest_category->name;
+                                                break;
+                                            }
+                                        }
+
+                                        if ('' === $latest_category_name) {
+                                            $latest_category_name = $latest_category_fallback;
+                                        }
+                                    }
                             ?>
                             <div class="latest_column px-3 px-sm-4 py-3">
                                 <a href="<?php the_permalink($latest_id); ?>" onclick="gtag('event', 'link_click', {'event_category':'link_click', 'event_label':'ブログ 最新記事', 'value': '1'})">
@@ -158,6 +179,11 @@ $is_blog_search = '' !== $blog_keyword || !empty($blog_categories) || '' !== $bl
                                                     }
                                                     ?>
                                                 </div>
+                                                <?php if ($latest_category_name) : ?>
+                                                <div class="post-category">
+                                                    <span><?php echo esc_html($latest_category_name); ?></span>
+                                                </div>
+                                                <?php endif; ?>
                                                 <?php if ($contributor) : ?>
                                                 <div class="post-note">
                                                     <p class="post-contributor mb-0"><small>投稿者：<?php echo $contributor; ?></small></p>
