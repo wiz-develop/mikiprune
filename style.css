@@ -7791,7 +7791,8 @@ button:focus {
   width: 31.333%;
   min-width: 0;
 }
-.screen_key_blog .blog-results-column .good-label {
+.screen_key_blog .post-category,
+.screen_key_blog .good-label {
   display: none;
 }
 .screen_key_blog .blog-results-column .post-category {

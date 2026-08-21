@@ -6741,10 +6741,11 @@ $border-light: 1px solid #eee;
         width: 31.333%;
         min-width: 0;
     }
+    .post-category,
+    .good-label {
+        display: none;
+    }
     .blog-results-column {
-        .good-label {
-            display: none;
-        }
         .post-category {
             display: block;
             margin-top: .65rem;
