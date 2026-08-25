@@ -394,8 +394,9 @@
 
 .kirei2026-program-card__lead {
 	color: var(--program-accent);
+	font-family: "Noto Serif JP", "Yu Mincho", "Hiragino Mincho ProN", serif !important;
 	font-size: 12px;
-	font-weight: 600;
+	font-weight: 400;
 	letter-spacing: .12em;
 	margin: 0 0 16px;
 }
