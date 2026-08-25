@@ -372,8 +372,28 @@
 	width: 100%;
 }
 
+.kirei2026-program-card__media.is-contain {
+	background: #fff;
+}
+
+.kirei2026-program-card__media.is-contain::after {
+	display: none;
+}
+
+.kirei2026-program-card__media.is-contain img {
+	object-fit: contain;
+}
+
+.kirei2026-program-card__media.is-contain > span {
+	color: var(--program-accent);
+}
+
 .kirei2026-program-card:hover .kirei2026-program-card__media img {
 	transform: scale(1.025);
+}
+
+.kirei2026-program-card:hover .kirei2026-program-card__media.is-contain img {
+	transform: none;
 }
 
 .kirei2026-program-card__media > span {

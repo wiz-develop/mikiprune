@@ -259,9 +259,14 @@ $show_later_sections = 'mikiprune-2022renewal.3d-showcase.net' === wp_parse_url(
 						)
 					);
 					$image_url = kirei2026_image_url( $program['program_image'] );
+					$image_path = $image_url ? wp_parse_url( $image_url, PHP_URL_PATH ) : '';
+					$media_class = 'kirei2026-program-card__media';
+					if ( 'program-touch.jpg' === wp_basename( $image_path ) ) {
+						$media_class .= ' is-contain';
+					}
 					?>
 					<article class="kirei2026-program-card <?php echo esc_attr( kirei2026_accent_class( $program['program_color'] ) ); ?>">
-						<div class="kirei2026-program-card__media">
+						<div class="<?php echo esc_attr( $media_class ); ?>">
 							<?php if ( $image_url ) : ?>
 								<img src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( $program['program_image_alt'] ); ?>" loading="lazy">
 							<?php endif; ?>
