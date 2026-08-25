@@ -78,6 +78,16 @@ if ( ! function_exists( 'kirei2026_accent_class' ) ) {
 	}
 }
 
+if ( ! function_exists( 'kirei2026_versioned_asset_url' ) ) {
+	function kirei2026_versioned_asset_url( $relative_path ) {
+		$relative_path = '/' . ltrim( $relative_path, '/' );
+		$file_path     = get_stylesheet_directory() . $relative_path;
+		$file_url      = get_stylesheet_directory_uri() . $relative_path;
+
+		return file_exists( $file_path ) ? add_query_arg( 'ver', (string) filemtime( $file_path ), $file_url ) : $file_url;
+	}
+}
+
 $default_schedules = array(
 	array(
 		'schedule_area'    => '横浜会場',
@@ -106,7 +116,7 @@ $default_programs = array(
 		'program_lead'        => 'キレイはここからはじまる',
 		'program_title'       => 'メイクアップショーステージ',
 		'program_description' => 'さまざまなシチュエーションを想定したメイクデモンストレーション。化粧品の使い方のコツもお伝えします。',
-		'program_image'       => $asset_base . 'program-see.jpg',
+		'program_image'       => kirei2026_versioned_asset_url( '/assets/image/kirei2026/program-see.jpg' ),
 		'program_image_alt'   => 'メイクアップショーのイメージ',
 		'program_color'       => 'rose',
 	),
@@ -115,7 +125,7 @@ $default_programs = array(
 		'program_lead'        => 'キレイのヒントがここにある',
 		'program_title'       => '美容トークショー「〜輝け、新しい私〜」',
 		'program_description' => '美しさを育むヒントや、年齢を重ねることを前向きに楽しむための考え方などをお届けします。',
-		'program_image'       => $asset_base . 'program-listen.jpg',
+		'program_image'       => kirei2026_versioned_asset_url( '/assets/image/kirei2026/program-listen.jpg' ),
 		'program_image_alt'   => '美容トークショーのイメージ',
 		'program_color'       => 'green',
 	),
@@ -124,7 +134,7 @@ $default_programs = array(
 		'program_lead'        => 'キレイを手に入れる',
 		'program_title'       => 'タッチアップブース',
 		'program_description' => 'スキンケアからベースメイクまで、ミキの化粧品を見て、触れて、お試しいただけます。',
-		'program_image'       => $asset_base . 'program-touch.jpg',
+		'program_image'       => kirei2026_versioned_asset_url( '/assets/image/kirei2026/program-touch.jpg' ),
 		'program_image_alt'   => 'タッチアップブースのイメージ',
 		'program_color'       => 'blue',
 	),
