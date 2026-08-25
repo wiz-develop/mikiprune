@@ -529,6 +529,17 @@
 	margin: 0 0 24px;
 }
 
+.kirei2026-closing ruby {
+	ruby-align: center;
+	ruby-position: over;
+}
+
+.kirei2026-closing rt {
+	font-size: .34em;
+	letter-spacing: 0;
+	line-height: 1;
+}
+
 .kirei2026-closing span {
 	color: var(--kirei-gold);
 	font-family: "Iowan Old Style", Georgia, serif;

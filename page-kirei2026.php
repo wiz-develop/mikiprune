@@ -88,6 +88,25 @@ if ( ! function_exists( 'kirei2026_versioned_asset_url' ) ) {
 	}
 }
 
+if ( ! function_exists( 'kirei2026_closing_message_html' ) ) {
+	function kirei2026_closing_message_html( $message ) {
+		$message = esc_html( (string) $message );
+		$message = str_replace(
+			'時間（とき）',
+			'<ruby>時<rt>と</rt></ruby><ruby>間<rt>き</rt></ruby>',
+			$message
+		);
+
+		return wp_kses(
+			$message,
+			array(
+				'ruby' => array(),
+				'rt'   => array(),
+			)
+		);
+	}
+}
+
 $default_schedules = array(
 	array(
 		'schedule_area'    => '横浜会場',
@@ -305,7 +324,7 @@ $show_later_sections = 'mikiprune-2022renewal.3d-showcase.net' === wp_parse_url(
 	<?php endif; ?>
 
 	<section class="kirei2026-closing" aria-label="Kirei 2026 メッセージ">
-		<p><?php echo esc_html( kirei2026_cfs_value( 'kirei_closing_message', 'キレイがきっと見つかる特別な時間（とき）' ) ); ?></p>
+		<p><?php echo kirei2026_closing_message_html( kirei2026_cfs_value( 'kirei_closing_message', 'キレイがきっと見つかる特別な時間（とき）' ) ); ?></p>
 		<span>Beauty of MIKI EXELAND</span>
 	</section>
 	<?php endif; ?>
