@@ -270,6 +270,16 @@ $is_blog_search = '' !== $blog_search_keyword || !empty($blog_categories) || '' 
                             $result_display_count = count($posts);
                             $search_condition_labels = array();
 
+                            if ($is_blog_search && 1 === $blog_page && function_exists('miki_blog_search_analytics_log')) {
+                                miki_blog_search_analytics_log(array(
+                                    'keyword' => $blog_search_keyword,
+                                    'category_slugs' => $blog_categories,
+                                    'category_names' => $selected_blog_category_names,
+                                    'archive_month' => $blog_month,
+                                    'result_count' => $result_total_count,
+                                ));
+                            }
+
                             if ('' !== $blog_keyword_label) {
                                 $search_condition_labels[] = 'キーワード：'.$blog_keyword_label;
                             }

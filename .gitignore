@@ -3,6 +3,10 @@
 !/.gitignore
 !/README.md
 !/page-miki-blog.php
+!/functions.php
+!/inc/
+/inc/*
+!/inc/blog-search-analytics.php
 !/common.js
 !/api/
 /api/*
