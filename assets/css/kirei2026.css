@@ -538,6 +538,8 @@
 	font-size: .34em;
 	letter-spacing: 0;
 	line-height: 1;
+	position: relative;
+	top: -.3em;
 }
 
 .kirei2026-closing span {
