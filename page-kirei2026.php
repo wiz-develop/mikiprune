@@ -133,6 +133,20 @@ $default_programs = array(
 $schedules = kirei2026_cfs_value( 'kirei_schedule_rows', $default_schedules );
 $programs  = kirei2026_cfs_value( 'kirei_program_rows', $default_programs );
 
+$has_program_content = false;
+foreach ( (array) $programs as $program ) {
+	foreach ( array( 'program_keyword', 'program_lead', 'program_title', 'program_description', 'program_image' ) as $field_name ) {
+		if ( ! empty( $program[ $field_name ] ) ) {
+			$has_program_content = true;
+			break 2;
+		}
+	}
+}
+
+if ( ! $has_program_content ) {
+	$programs = $default_programs;
+}
+
 $guest_name    = kirei2026_cfs_value( 'kirei_guest_name' );
 $guest_profile = kirei2026_cfs_value( 'kirei_guest_profile' );
 $guest_image   = kirei2026_image_url( kirei2026_cfs_value( 'kirei_guest_image' ) );
