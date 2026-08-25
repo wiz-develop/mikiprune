@@ -300,7 +300,7 @@ $show_later_sections = 'mikiprune-2022renewal.3d-showcase.net' === wp_parse_url(
 	<?php endif; ?>
 
 	<section class="kirei2026-closing" aria-label="Kirei 2026 メッセージ">
-		<p><?php echo esc_html( kirei2026_cfs_value( 'kirei_closing_message', 'あなたらしい「キレイ」に、出会える一日を。' ) ); ?></p>
+		<p><?php echo esc_html( kirei2026_cfs_value( 'kirei_closing_message', 'キレイがきっと見つかる特別な時間（とき）' ) ); ?></p>
 		<span>Beauty of MIKI EXELAND</span>
 	</section>
 	<?php endif; ?>
