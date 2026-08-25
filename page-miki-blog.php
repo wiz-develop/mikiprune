@@ -16,8 +16,11 @@ $blog_about = CFS()->get('blog_about');
 $blog_page_permalink = get_permalink(get_queried_object_id());
 $posts_per_page = 6;
 $search_posts_per_page = 9;
-$blog_page = isset($_GET['blog_page']) && is_scalar($_GET['blog_page'])
-    ? max(1, absint($_GET['blog_page']))
+$requested_blog_page = isset($_GET['blog_page']) && is_string($_GET['blog_page'])
+    ? wp_unslash($_GET['blog_page'])
+    : '';
+$blog_page = preg_match('/^[1-9]\d*$/', $requested_blog_page)
+    ? (int) $requested_blog_page
     : 1;
 $blog_keyword = isset($_GET['blog_keyword']) && is_string($_GET['blog_keyword'])
     ? sanitize_text_field(wp_unslash($_GET['blog_keyword']))
@@ -38,7 +41,10 @@ $blog_month = isset($_GET['blog_month']) && is_string($_GET['blog_month'])
     ? sanitize_text_field(wp_unslash($_GET['blog_month']))
     : '';
 
-if (!preg_match('/^\d{6}$/', $blog_month)) {
+if (!preg_match('/^\d{6}$/', $blog_month)
+    || (int) substr($blog_month, 0, 4) < 1
+    || (int) substr($blog_month, 4, 2) < 1
+    || (int) substr($blog_month, 4, 2) > 12) {
     $blog_month = '';
 }
 
@@ -83,6 +89,10 @@ if ($blog_root_category) {
             $blog_archive_months[$month_value] = get_post_time('Y年n月', false, $archive_post_id);
         }
     }
+}
+
+if ('' !== $blog_month && !isset($blog_archive_months[$blog_month])) {
+    $blog_month = '';
 }
 
 $is_blog_search = '' !== $blog_search_keyword || !empty($blog_categories) || '' !== $blog_month;
@@ -245,7 +255,7 @@ $is_blog_search = '' !== $blog_search_keyword || !empty($blog_categories) || '' 
                                     );
                                 }
                             } else {
-                                $post_args['offset'] = 1;
+                                $post_args['offset'] = $latest_id ? 1 : 0;
                                 $post_args['date_query'] = array(
                                     array(
                                         'before' => 'now',
