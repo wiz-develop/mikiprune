@@ -2,11 +2,17 @@
 $parse_uri = explode('wp-content', $_SERVER['SCRIPT_FILENAME'])[0];
 require_once $parse_uri.'wp-load.php';
 
-$now_post_num = isset($_POST['now_post_num']) && is_scalar($_POST['now_post_num'])
-    ? absint($_POST['now_post_num'])
+$requested_now_post_num = isset($_POST['now_post_num']) && is_scalar($_POST['now_post_num'])
+    ? (string) wp_unslash($_POST['now_post_num'])
+    : '';
+$now_post_num = preg_match('/^\d+$/', $requested_now_post_num)
+    ? (int) $requested_now_post_num
     : 0;
-$get_post_num = isset($_POST['get_post_num']) && is_scalar($_POST['get_post_num'])
-    ? absint($_POST['get_post_num'])
+$requested_get_post_num = isset($_POST['get_post_num']) && is_scalar($_POST['get_post_num'])
+    ? (string) wp_unslash($_POST['get_post_num'])
+    : '';
+$get_post_num = preg_match('/^[1-9]\d*$/', $requested_get_post_num)
+    ? (int) $requested_get_post_num
     : 6;
 $get_post_num = max(1, min(12, $get_post_num));
 $post_cat_data = isset($_POST['post_cat']) && is_string($_POST['post_cat'])
