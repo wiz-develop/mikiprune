@@ -14,7 +14,8 @@ $post_cat_data = isset($_POST['post_cat']) && is_string($_POST['post_cat'])
     : '';
 
 if (!in_array($post_cat_data, array('blog', 'recommended', 'good'), true)) {
-    wp_die();
+    status_header(400);
+    exit;
 }
 
 $post_cat = $post_cat_data;
