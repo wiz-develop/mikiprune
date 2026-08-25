@@ -308,6 +308,15 @@
 	color: rgba(255, 255, 255, .58);
 }
 
+.kirei2026-program .kirei2026-section-heading--light {
+	background: transparent;
+	border: 0;
+	box-shadow: none;
+	color: #fff;
+	padding: 0;
+	position: static;
+}
+
 .kirei2026-program__list {
 	display: grid;
 	gap: 28px;
