@@ -324,14 +324,6 @@ $is_blog_search = '' !== $blog_search_keyword || !empty($blog_categories) || '' 
                                                 </svg>
                                                 <input id="blog-keyword" name="blog_keyword" type="search" value="<?php echo esc_attr($blog_keyword); ?>" placeholder="例：プルーン、レシピ、食育、宇宙">
                                             </div>
-                                            <button class="blog-search__submit" type="submit">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
-                                                    <circle cx="8.25" cy="8.25" r="5.75" fill="none" stroke="currentColor" stroke-width="1.8"/>
-                                                    <path d="m12.5 12.5 4.5 4.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"/>
-                                                </svg>
-                                                <span>検索する</span>
-                                            </button>
-
                                             <fieldset class="blog-search__filter blog-search__categories">
                                                 <legend class="screen-reader-text">カテゴリー</legend>
                                                 <div class="blog-search__filter-heading">
@@ -367,6 +359,14 @@ $is_blog_search = '' !== $blog_search_keyword || !empty($blog_categories) || '' 
                                                     <?php endforeach; ?>
                                                 </select>
                                             </label>
+
+                                            <button class="blog-search__submit" type="submit">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+                                                    <circle cx="8.25" cy="8.25" r="5.75" fill="none" stroke="currentColor" stroke-width="1.8"/>
+                                                    <path d="m12.5 12.5 4.5 4.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"/>
+                                                </svg>
+                                                <span>検索する</span>
+                                            </button>
 
                                             <a class="blog-search__reset" href="<?php echo esc_url($blog_page_permalink); ?>#blog-search-results">
                                                 <svg class="blog-search__reset-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
