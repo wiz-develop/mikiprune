@@ -8070,3 +8070,8 @@ button:focus {
     transition: none;
   }
 }
+header .site-function-menu .function-list .hamburger-btn {
+  min-width: 0;
+  padding-right: 0.25rem !important;
+  padding-left: 0.25rem !important;
+}

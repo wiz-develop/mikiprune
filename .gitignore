@@ -3,6 +3,10 @@
 !/.gitignore
 !/README.md
 !/page-miki-blog.php
+!/common.js
+!/api/
+/api/*
+!/api/blog-readmore.php
 !/style.scss
 !/style.css
 !/style.min.css
