@@ -181,8 +181,8 @@ $guest_profile = kirei2026_cfs_value( 'kirei_guest_profile' );
 $guest_image   = kirei2026_image_url( kirei2026_cfs_value( 'kirei_guest_image' ) );
 $show_guest    = '' !== trim( (string) $guest_name ) || '' !== trim( (string) $guest_profile ) || '' !== $guest_image;
 
-// 開催内容以降はテスト環境で確認し、本番では公開準備が整うまで非表示にします。
-$show_later_sections = 'mikiprune-2022renewal.3d-showcase.net' === wp_parse_url( home_url( '/' ), PHP_URL_HOST );
+// 開催内容以降を公開します。
+$show_later_sections = true;
 ?>
 
 <main class="kirei2026" id="main-content">
