@@ -27,4 +27,4 @@ php kirei2026/sync-wordpress.php --wp-load=/path/to/wp-load.php
 php kirei2026/sync-wordpress.php --wp-load=/path/to/wp-load.php --apply
 ```
 
-スクリプトはCLI専用です。固定ページとCFSグループが存在しない場合に作成し、日時・会場情報が未登録の場合のみ初期データを管理画面へ登録します。
+スクリプトはCLI専用です。固定ページとCFSグループが存在しない場合に作成し、日時・会場、開催内容、末尾コメントが未登録の場合のみ初期データを管理画面へ登録します。すでに入力されている内容は上書きしません。

@@ -29,7 +29,16 @@ wp_enqueue_script(
 	true
 );
 
+// 既存header.phpがトップページ固定のcanonicalを出力するため、
+// このページではその1行だけを除去し、WordPress標準のcanonicalを残します。
+ob_start();
 get_header();
+$kirei2026_header_html = ob_get_clean();
+$kirei2026_home_canonical = sprintf(
+	'<link rel="canonical" href="%s">',
+	esc_url( home_url( '/' ) )
+);
+echo str_replace( $kirei2026_home_canonical, '', $kirei2026_header_html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 if ( ! function_exists( 'kirei2026_cfs_value' ) ) {
 	function kirei2026_cfs_value( $field_name, $default = '' ) {
@@ -73,6 +82,11 @@ if ( ! function_exists( 'kirei2026_image_url' ) ) {
 
 if ( ! function_exists( 'kirei2026_accent_class' ) ) {
 	function kirei2026_accent_class( $accent ) {
+		if ( is_array( $accent ) ) {
+			$accent_keys = array_keys( $accent );
+			$accent      = reset( $accent_keys );
+		}
+
 		$allowed = array( 'rose', 'green', 'blue' );
 		return in_array( $accent, $allowed, true ) ? 'is-' . $accent : 'is-rose';
 	}
