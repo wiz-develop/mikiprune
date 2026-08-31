@@ -201,6 +201,12 @@ function kirei2026_sync_schedule_values() {
 
 function kirei2026_sync_page_values() {
 	$asset_base = get_stylesheet_directory_uri() . '/assets/image/kirei2026/';
+	$home_host  = wp_parse_url( home_url( '/' ), PHP_URL_HOST );
+
+	// 本番は管理CLI実行時も公開URLと同じHTTPSで画像URLを保存します。
+	if ( 'www.mikiprune.co.jp' === $home_host ) {
+		$asset_base = set_url_scheme( $asset_base, 'https' );
+	}
 
 	return array_merge(
 		kirei2026_sync_schedule_values(),
