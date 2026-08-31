@@ -199,6 +199,48 @@ function kirei2026_sync_schedule_values() {
 	);
 }
 
+function kirei2026_sync_page_values() {
+	$asset_base = get_stylesheet_directory_uri() . '/assets/image/kirei2026/';
+
+	return array_merge(
+		kirei2026_sync_schedule_values(),
+		array(
+			'kirei_program_heading' => '開催内容',
+			'kirei_program_rows'    => array(
+				array(
+					'program_keyword'     => 'みる',
+					'program_lead'        => 'キレイはここからはじまる',
+					'program_title'       => 'メイクアップショーステージ',
+					'program_description' => 'さまざまなシチュエーションを想定したメイクデモンストレーション。化粧品の使い方のコツもお伝えします。',
+					'program_image'       => $asset_base . 'program-see.jpg',
+					'program_image_alt'   => 'メイクアップショーのイメージ',
+					'program_color'       => 'rose',
+				),
+				array(
+					'program_keyword'     => 'きく',
+					'program_lead'        => 'キレイのヒントがここにある',
+					'program_title'       => '美容トークショー「〜輝け、新しい私〜」',
+					'program_description' => '美しさを育むヒントや、年齢を重ねることを前向きに楽しむための考え方などをお届けします。',
+					'program_image'       => $asset_base . 'program-listen.jpg',
+					'program_image_alt'   => '美容トークショーのイメージ',
+					'program_color'       => 'green',
+				),
+				array(
+					'program_keyword'     => 'ふれる',
+					'program_lead'        => 'キレイを手に入れる',
+					'program_title'       => 'タッチアップブース',
+					'program_description' => 'スキンケアからベースメイクまで、ミキの化粧品を見て、触れて、お試しいただけます。',
+					'program_image'       => $asset_base . 'program-touch.jpg',
+					'program_image_alt'   => 'タッチアップブースのイメージ',
+					'program_color'       => 'blue',
+				),
+			),
+			'kirei_program_note'    => '※掲載の画像・イベント内容・構成はイメージです。実際の内容とは異なる場合があります。',
+			'kirei_closing_message' => 'キレイがきっと見つかる特別な時間（とき）',
+		)
+	);
+}
+
 $page  = get_page_by_path( 'kirei2026', OBJECT, 'page' );
 $group = get_page_by_path( 'kirei-2026', OBJECT, 'cfs' );
 
@@ -263,9 +305,44 @@ if ( ! $group ) {
 CFS()->field_group->cache = array();
 CFS()->api->cache         = array();
 
-$current_rows = (array) CFS()->get( 'kirei_schedule_rows', $page->ID );
-if ( empty( $current_rows ) ) {
-	CFS()->save( kirei2026_sync_schedule_values(), array( 'ID' => (int) $page->ID ) );
+$current_schedule_rows = (array) CFS()->get( 'kirei_schedule_rows', $page->ID );
+$current_program_rows  = (array) CFS()->get( 'kirei_program_rows', $page->ID );
+$has_program_content   = false;
+
+foreach ( $current_program_rows as $program_row ) {
+	foreach ( array( 'program_keyword', 'program_lead', 'program_title', 'program_description', 'program_image' ) as $program_field ) {
+		if ( ! empty( $program_row[ $program_field ] ) ) {
+			$has_program_content = true;
+			break 2;
+		}
+	}
+}
+
+if ( empty( $current_schedule_rows ) && ! $has_program_content ) {
+	CFS()->save( kirei2026_sync_page_values(), array( 'ID' => (int) $page->ID ) );
+} else {
+	if ( empty( $current_schedule_rows ) ) {
+		CFS()->save( kirei2026_sync_schedule_values(), array( 'ID' => (int) $page->ID ) );
+	}
+
+	if ( ! $has_program_content ) {
+		$page_values = kirei2026_sync_page_values();
+		CFS()->save(
+			array(
+				'kirei_program_heading' => $page_values['kirei_program_heading'],
+				'kirei_program_rows'    => $page_values['kirei_program_rows'],
+				'kirei_program_note'    => $page_values['kirei_program_note'],
+			),
+			array( 'ID' => (int) $page->ID )
+		);
+	}
+
+	if ( '' === trim( (string) CFS()->get( 'kirei_closing_message', $page->ID ) ) ) {
+		CFS()->save(
+			array( 'kirei_closing_message' => 'キレイがきっと見つかる特別な時間（とき）' ),
+			array( 'ID' => (int) $page->ID )
+		);
+	}
 }
 
 CFS()->field_group->cache = array();
@@ -273,12 +350,16 @@ CFS()->api->cache         = array();
 
 $saved_fields = (array) get_post_meta( $group->ID, 'cfs_fields', true );
 $saved_rows   = (array) CFS()->get( 'kirei_schedule_rows', $page->ID );
+$saved_program_rows = (array) CFS()->get( 'kirei_program_rows', $page->ID );
+$saved_closing = (string) CFS()->get( 'kirei_closing_message', $page->ID );
 $template     = get_post_meta( $page->ID, '_wp_page_template', true );
 
 $ok = 'publish' === get_post_status( $page->ID )
 	&& 'page-kirei2026.php' === $template
 	&& 27 === count( $saved_fields )
-	&& 3 === count( $saved_rows );
+	&& 3 === count( $saved_rows )
+	&& 3 === count( $saved_program_rows )
+	&& '' !== trim( $saved_closing );
 
 kirei2026_sync_report(
 	array(
@@ -291,6 +372,8 @@ kirei2026_sync_report(
 		'group_id'           => (int) $group->ID,
 		'field_count'        => count( $saved_fields ),
 		'schedule_row_count' => count( $saved_rows ),
+		'program_row_count'  => count( $saved_program_rows ),
+		'closing_registered' => '' !== trim( $saved_closing ),
 	)
 );
 
