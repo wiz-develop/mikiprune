@@ -16,12 +16,17 @@
 !/style.min.css
 !/template-parts/
 /template-parts/*
+!/template-parts/parts/
+/template-parts/parts/*
+!/template-parts/parts/about-link-page_top.php
+!/template-parts/parts/about-link-page_bottom.php
 !/template-parts/content/
 /template-parts/content/*
 !/template-parts/content/post/
 /template-parts/content/post/*
 !/template-parts/content/post/post-column.php
 !/page-kirei2026.php
+!/page-company.php
 !/assets/
 /assets/*
 !/assets/css/
