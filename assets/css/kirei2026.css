@@ -416,9 +416,14 @@
 
 .kirei2026-timetable__track header {
 	align-items: baseline;
+	background: transparent;
+	border: 0;
+	box-shadow: none;
 	display: flex;
 	gap: 14px;
 	margin-bottom: 8px;
+	padding: 0;
+	position: static;
 }
 
 .kirei2026-timetable__track header strong {
