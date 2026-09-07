@@ -665,7 +665,7 @@
 }
 
 .kirei2026-person {
-	--person-accent: var(--kirei-rose);
+	--person-accent: #e2a0b5;
 	border-right: 1px solid rgba(255, 255, 255, .16);
 	padding: 32px;
 }
@@ -675,7 +675,7 @@
 }
 
 .kirei2026-person.is-listen {
-	--person-accent: #8da98f;
+	--person-accent: #aac6ac;
 }
 
 .kirei2026-person__image {
@@ -694,8 +694,9 @@
 .kirei2026-person__program {
 	color: var(--person-accent);
 	font-family: "Noto Serif JP", "Yu Mincho", "Hiragino Mincho ProN", serif;
-	font-size: 22px;
-	letter-spacing: .12em;
+	font-size: 24px;
+	font-weight: 500;
+	letter-spacing: .1em;
 	margin: 0 0 8px;
 }
 
