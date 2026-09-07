@@ -300,6 +300,15 @@
 	position: static;
 }
 
+.kirei2026-venue-guide .kirei2026-section-heading h2 {
+	overflow-wrap: normal;
+	word-break: keep-all;
+}
+
+.kirei2026-venue-guide__title-tail {
+	white-space: nowrap;
+}
+
 .kirei2026-venue-guide__list {
 	border-bottom: 1px solid rgba(44, 39, 48, .18);
 }
@@ -428,10 +437,12 @@
 
 .kirei2026-timetable__track header strong {
 	color: var(--track-color);
+	filter: none;
 	font-family: "Noto Serif JP", "Yu Mincho", "Hiragino Mincho ProN", serif;
 	font-size: 25px;
 	font-weight: 500;
 	letter-spacing: .12em;
+	text-shadow: none;
 }
 
 .kirei2026-timetable__track header span {
@@ -881,6 +892,11 @@
 
 	.kirei2026-venue-guide {
 		padding: 88px 0 96px;
+	}
+
+	.kirei2026-venue-guide .kirei2026-section-heading h2 {
+		font-size: clamp(22px, 6.4vw, 25px);
+		letter-spacing: .08em;
 	}
 
 	.kirei2026-venue summary {

@@ -310,7 +310,16 @@ $show_later_sections = 'mikiprune-2022renewal.3d-showcase.net' === wp_parse_url(
 		<div class="kirei2026-container">
 			<header class="kirei2026-section-heading">
 				<p>Venue guide</p>
-				<h2><?php echo esc_html( kirei2026_cfs_value( 'kirei_venue_guide_heading', '会場案内・タイムスケジュール' ) ); ?></h2>
+				<h2>
+					<?php
+					$venue_guide_heading       = (string) kirei2026_cfs_value( 'kirei_venue_guide_heading', '会場案内・タイムスケジュール' );
+					$venue_guide_heading_parts = explode( '・', $venue_guide_heading, 2 );
+					echo esc_html( $venue_guide_heading_parts[0] );
+					if ( isset( $venue_guide_heading_parts[1] ) ) {
+						echo '・<wbr><span class="kirei2026-venue-guide__title-tail">' . esc_html( $venue_guide_heading_parts[1] ) . '</span>';
+					}
+					?>
+				</h2>
 			</header>
 
 			<div class="kirei2026-venue-guide__list">
