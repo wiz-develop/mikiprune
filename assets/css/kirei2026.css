@@ -414,12 +414,6 @@
 	padding: 18px;
 }
 
-.kirei2026-floor-map img {
-	height: 460px;
-	object-fit: contain;
-	width: 100%;
-}
-
 .kirei2026-floor-map figcaption {
 	color: #615b63;
 	font-size: 12px;
@@ -941,11 +935,6 @@
 		gap: 34px;
 		grid-template-columns: 1fr;
 		padding: 10px 0 44px;
-	}
-
-	.kirei2026-floor-map img {
-		height: auto;
-		max-height: 520px;
 	}
 
 	.kirei2026-timetable__track {
