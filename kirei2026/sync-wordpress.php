@@ -107,7 +107,7 @@ function kirei2026_sync_field_schema( $page_id ) {
 		'',
 		array(
 			'row_display' => 0,
-			'row_label'   => '{program_keyword:開催内容}',
+			'row_label'   => '開催内容',
 			'button_label'=> '開催内容を追加',
 			'limit_min'   => '',
 			'limit_max'   => '',
@@ -155,7 +155,7 @@ function kirei2026_sync_field_schema( $page_id ) {
 		'',
 		array(
 			'row_display' => 0,
-			'row_label'   => '{person_name:出演者}',
+			'row_label'   => '出演者',
 			'button_label'=> '出演者を追加',
 			'limit_min'   => '',
 			'limit_max'   => '',
