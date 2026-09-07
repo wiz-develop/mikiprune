@@ -254,30 +254,6 @@
 	margin: 0;
 }
 
-.kirei2026-date-card__links {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 8px;
-	grid-column: 2 / -1;
-	margin-top: -16px;
-}
-
-.kirei2026-date-card__links a {
-	border: 1px solid rgba(148, 31, 70, .28);
-	border-radius: 99px;
-	color: var(--kirei-rose);
-	font-size: 12px;
-	padding: 7px 13px;
-	text-decoration: none;
-	transition: background-color .2s ease, color .2s ease;
-}
-
-.kirei2026-date-card__links a:hover,
-.kirei2026-date-card__links a:focus-visible {
-	background: var(--kirei-rose);
-	color: #fff;
-}
-
 .kirei2026-note {
 	color: var(--kirei-rose);
 	font-size: 15px;
@@ -890,11 +866,6 @@
 		letter-spacing: .03em;
 		margin-top: 4px;
 		text-align: right;
-	}
-
-	.kirei2026-date-card__links {
-		grid-column: 2 / -1;
-		margin-top: 8px;
 	}
 
 	.kirei2026-program {

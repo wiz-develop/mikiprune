@@ -269,8 +269,6 @@ $show_later_sections = 'mikiprune-2022renewal.3d-showcase.net' === wp_parse_url(
 							'schedule_weekday' => '',
 							'schedule_time'    => '',
 							'schedule_venue'   => '',
-							'access_url'       => '',
-							'timetable_url'    => '',
 						)
 					);
 					?>
@@ -289,12 +287,6 @@ $show_later_sections = 'mikiprune-2022renewal.3d-showcase.net' === wp_parse_url(
 								<p class="kirei2026-date-card__time"><?php echo esc_html( $schedule['schedule_time'] ); ?></p>
 							<?php endif; ?>
 						</div>
-						<?php if ( $schedule['access_url'] || $schedule['timetable_url'] ) : ?>
-							<nav class="kirei2026-date-card__links" aria-label="<?php echo esc_attr( $schedule['schedule_area'] ); ?>のご案内">
-								<?php if ( $schedule['access_url'] ) : ?><a href="<?php echo esc_url( $schedule['access_url'] ); ?>">アクセス</a><?php endif; ?>
-								<?php if ( $schedule['timetable_url'] ) : ?><a href="<?php echo esc_url( $schedule['timetable_url'] ); ?>">タイムスケジュール</a><?php endif; ?>
-							</nav>
-						<?php endif; ?>
 					</article>
 				<?php endforeach; ?>
 			</div>
