@@ -198,6 +198,7 @@ $default_programs = array(
 $schedules = kirei2026_cfs_value( 'kirei_schedule_rows', $default_schedules );
 $programs  = kirei2026_cfs_value( 'kirei_program_rows', $default_programs );
 $people    = (array) kirei2026_cfs_value( 'kirei_people_rows', array() );
+$schedule_note = kirei2026_cfs_value( 'kirei_schedule_note' );
 
 $has_program_content = false;
 foreach ( (array) $programs as $program ) {
@@ -300,7 +301,9 @@ $show_later_sections = 'mikiprune-2022renewal.3d-showcase.net' === wp_parse_url(
 				<?php endforeach; ?>
 			</div>
 
-			<p class="kirei2026-note"><?php echo esc_html( kirei2026_cfs_value( 'kirei_schedule_note', '※詳細は準備が整い次第、お知らせいたします。' ) ); ?></p>
+			<?php if ( '' !== trim( (string) $schedule_note ) ) : ?>
+				<p class="kirei2026-note"><?php echo esc_html( $schedule_note ); ?></p>
+			<?php endif; ?>
 		</div>
 	</section>
 
