@@ -270,7 +270,6 @@ $show_later_sections = 'mikiprune-2022renewal.3d-showcase.net' === wp_parse_url(
 							'schedule_time'    => '',
 							'schedule_venue'   => '',
 							'access_url'       => '',
-							'floor_map_url'    => '',
 							'timetable_url'    => '',
 						)
 					);
@@ -290,10 +289,9 @@ $show_later_sections = 'mikiprune-2022renewal.3d-showcase.net' === wp_parse_url(
 								<p class="kirei2026-date-card__time"><?php echo esc_html( $schedule['schedule_time'] ); ?></p>
 							<?php endif; ?>
 						</div>
-						<?php if ( $schedule['access_url'] || $schedule['floor_map_url'] || $schedule['timetable_url'] ) : ?>
+						<?php if ( $schedule['access_url'] || $schedule['timetable_url'] ) : ?>
 							<nav class="kirei2026-date-card__links" aria-label="<?php echo esc_attr( $schedule['schedule_area'] ); ?>のご案内">
 								<?php if ( $schedule['access_url'] ) : ?><a href="<?php echo esc_url( $schedule['access_url'] ); ?>">アクセス</a><?php endif; ?>
-								<?php if ( $schedule['floor_map_url'] ) : ?><a href="<?php echo esc_url( $schedule['floor_map_url'] ); ?>">フロアマップ</a><?php endif; ?>
 								<?php if ( $schedule['timetable_url'] ) : ?><a href="<?php echo esc_url( $schedule['timetable_url'] ); ?>">タイムスケジュール</a><?php endif; ?>
 							</nav>
 						<?php endif; ?>
@@ -342,12 +340,12 @@ $show_later_sections = 'mikiprune-2022renewal.3d-showcase.net' === wp_parse_url(
 							'touch_schedule'   => '',
 						)
 					);
-					$floor_map_url = kirei2026_image_url( $schedule['floor_map_image'] );
+					$floor_map_image_url = kirei2026_image_url( $schedule['floor_map_image'] );
 					$see_items     = kirei2026_timetable_items( $schedule['see_schedule'] );
 					$listen_items  = kirei2026_timetable_items( $schedule['listen_schedule'] );
 					$touch_items   = kirei2026_timetable_items( $schedule['touch_schedule'] );
 
-					if ( ! $floor_map_url && ! $see_items && ! $listen_items && ! $touch_items ) {
+					if ( ! $floor_map_image_url && ! $see_items && ! $listen_items && ! $touch_items ) {
 						continue;
 					}
 					?>
@@ -358,12 +356,10 @@ $show_later_sections = 'mikiprune-2022renewal.3d-showcase.net' === wp_parse_url(
 							<i aria-hidden="true"></i>
 						</summary>
 						<div class="kirei2026-venue__content">
-							<?php if ( $floor_map_url ) : ?>
+							<?php if ( $floor_map_image_url ) : ?>
 								<figure class="kirei2026-floor-map">
 									<p class="kirei2026-floor-map__label">フロアイメージ</p>
-									<a href="<?php echo esc_url( $floor_map_url ); ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php echo esc_attr( $schedule['schedule_area'] ); ?>のフロアマップを拡大表示">
-										<img src="<?php echo esc_url( $floor_map_url ); ?>" alt="<?php echo esc_attr( $schedule['floor_map_alt'] ); ?>" loading="lazy">
-									</a>
+									<img src="<?php echo esc_url( $floor_map_image_url ); ?>" alt="<?php echo esc_attr( $schedule['floor_map_alt'] ); ?>" loading="lazy">
 									<?php if ( $schedule['floor_map_caption'] ) : ?><figcaption><?php echo esc_html( $schedule['floor_map_caption'] ); ?></figcaption><?php endif; ?>
 								</figure>
 							<?php endif; ?>

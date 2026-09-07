@@ -77,7 +77,6 @@ function kirei2026_sync_field_schema( $page_id ) {
 	$add_field( 'schedule_time', '時間', 'text', $schedule_loop, '例：10:00〜12:00', array() );
 	$add_field( 'schedule_venue', '会場', 'text', $schedule_loop, '', array() );
 	$add_field( 'access_url', 'アクセスURL', 'text', $schedule_loop, '空欄の場合は非表示', array() );
-	$add_field( 'floor_map_url', 'フロアマップURL', 'text', $schedule_loop, '空欄の場合は非表示', array() );
 	$add_field( 'timetable_url', 'タイムスケジュールURL', 'text', $schedule_loop, '空欄の場合は非表示', array() );
 	$add_field(
 		'floor_map_image',
@@ -218,7 +217,6 @@ function kirei2026_sync_schedule_values() {
 				'schedule_time'    => '10:00〜12:00',
 				'schedule_venue'   => 'パシフィコ横浜 マリンロビー',
 				'access_url'       => '',
-				'floor_map_url'    => '',
 				'timetable_url'    => '',
 				'floor_map_image'  => '',
 				'floor_map_alt'    => '横浜会場のフロアマップ',
@@ -234,7 +232,6 @@ function kirei2026_sync_schedule_values() {
 				'schedule_time'    => '10:00〜12:00',
 				'schedule_venue'   => 'グランキューブ大阪 メインホワイエ',
 				'access_url'       => '',
-				'floor_map_url'    => '',
 				'timetable_url'    => '',
 				'floor_map_image'  => '',
 				'floor_map_alt'    => '大阪会場のフロアマップ',
@@ -250,7 +247,6 @@ function kirei2026_sync_schedule_values() {
 				'schedule_time'    => '10:00〜12:00',
 				'schedule_venue'   => '福岡サンパレス 大ホール',
 				'access_url'       => '',
-				'floor_map_url'    => '',
 				'timetable_url'    => '',
 				'floor_map_image'  => '',
 				'floor_map_alt'    => '福岡会場のフロアマップ',
@@ -532,7 +528,7 @@ foreach ( $saved_rows as $saved_row ) {
 
 $ok = 'publish' === get_post_status( $page->ID )
 	&& 'page-kirei2026.php' === $template
-	&& 38 === count( $saved_fields )
+	&& 37 === count( $saved_fields )
 	&& 3 === count( $saved_rows )
 	&& 3 === count( $saved_program_rows )
 	&& 3 === count( $saved_people_rows )
