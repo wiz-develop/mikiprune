@@ -383,9 +383,33 @@
 	margin: 0;
 }
 
+.kirei2026-floor-map__label {
+	align-items: center;
+	color: #043d96;
+	display: flex;
+	font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+	font-size: 14px;
+	font-weight: 600;
+	gap: 14px;
+	justify-content: center;
+	letter-spacing: .18em;
+	line-height: 1.5;
+	margin: 0 0 16px;
+	text-align: center;
+}
+
+.kirei2026-floor-map__label::before,
+.kirei2026-floor-map__label::after {
+	background: #043d96;
+	content: "";
+	height: 1px;
+	max-width: 56px;
+	width: 12%;
+}
+
 .kirei2026-floor-map a {
 	background: #fff;
-	border: 1px solid rgba(71, 102, 141, .2);
+	border: 0;
 	display: block;
 	padding: 18px;
 }

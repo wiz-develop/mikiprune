@@ -360,6 +360,7 @@ $show_later_sections = 'mikiprune-2022renewal.3d-showcase.net' === wp_parse_url(
 						<div class="kirei2026-venue__content">
 							<?php if ( $floor_map_url ) : ?>
 								<figure class="kirei2026-floor-map">
+									<p class="kirei2026-floor-map__label">フロアイメージ</p>
 									<a href="<?php echo esc_url( $floor_map_url ); ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php echo esc_attr( $schedule['schedule_area'] ); ?>のフロアマップを拡大表示">
 										<img src="<?php echo esc_url( $floor_map_url ); ?>" alt="<?php echo esc_attr( $schedule['floor_map_alt'] ); ?>" loading="lazy">
 									</a>
