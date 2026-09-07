@@ -292,6 +292,14 @@
 	padding: 116px 0 124px;
 }
 
+.kirei2026-venue-guide .kirei2026-section-heading {
+	background: transparent;
+	border: 0;
+	box-shadow: none;
+	padding: 0;
+	position: static;
+}
+
 .kirei2026-venue-guide__list {
 	border-bottom: 1px solid rgba(44, 39, 48, .18);
 }
