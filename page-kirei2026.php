@@ -347,6 +347,7 @@ $show_later_sections = 'mikiprune-2022renewal.3d-showcase.net' === wp_parse_url(
 					?>
 				</h2>
 			</header>
+			<p class="kirei2026-venue-guide__instruction">会場を選択すると、フロアマップとタイムスケジュールを確認できます。</p>
 
 			<div class="kirei2026-venue-guide__list">
 				<?php foreach ( (array) $schedules as $index => $schedule ) : ?>
@@ -374,7 +375,7 @@ $show_later_sections = 'mikiprune-2022renewal.3d-showcase.net' === wp_parse_url(
 						continue;
 					}
 					?>
-					<details class="kirei2026-venue"<?php echo 0 === $index ? ' open' : ''; ?>>
+					<details class="kirei2026-venue">
 						<summary>
 							<span><?php echo esc_html( $schedule['schedule_area'] ); ?></span>
 							<small><?php echo esc_html( $schedule['schedule_date'] ); ?>（<?php echo esc_html( $schedule['schedule_weekday'] ); ?>）</small>
