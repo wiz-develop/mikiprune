@@ -138,6 +138,107 @@
 	width: 1px;
 }
 
+.kirei2026-guide {
+	background: #fff;
+	padding: 152px 0 80px;
+}
+
+.kirei2026-guide__heading {
+	background: transparent !important;
+	box-shadow: none !important;
+	filter: none !important;
+	text-align: center;
+}
+
+.kirei2026-guide__heading h2 {
+	font-family: "Noto Serif JP", "Yu Mincho", "Hiragino Mincho ProN", serif;
+	font-size: clamp(34px, 4.5vw, 50px);
+	font-weight: 500;
+	letter-spacing: .14em;
+	line-height: 1.4;
+	margin: 0;
+}
+
+.kirei2026-guide__heading p {
+	color: #6f6871;
+	font-size: 14px;
+	letter-spacing: .08em;
+	line-height: 1.8;
+	margin: 18px 0 0;
+}
+
+.kirei2026-guide__nav {
+	margin-top: 46px;
+}
+
+.kirei2026-guide__nav ul {
+	background: rgba(148, 31, 70, .16);
+	border-bottom: 1px solid rgba(148, 31, 70, .16);
+	border-top: 1px solid rgba(148, 31, 70, .16);
+	display: grid;
+	gap: 1px;
+	grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.kirei2026-guide__nav li {
+	background: #fff;
+	margin: 0;
+}
+
+.kirei2026-guide__nav a {
+	align-items: center;
+	color: var(--kirei-ink);
+	display: flex;
+	font-family: "Noto Serif JP", "Yu Mincho", "Hiragino Mincho ProN", serif;
+	font-size: 17px;
+	font-weight: 500;
+	justify-content: center;
+	letter-spacing: .06em;
+	line-height: 1.7;
+	min-height: 106px;
+	padding: 22px 42px 22px 20px;
+	position: relative;
+	text-align: center;
+	text-decoration: none;
+	transition: background-color .2s ease, color .2s ease;
+}
+
+.kirei2026-guide__nav a:hover,
+.kirei2026-guide__nav a:focus-visible {
+	background: var(--kirei-blush);
+	color: var(--kirei-rose);
+}
+
+.kirei2026-guide__nav a i {
+	border-bottom: 1px solid currentColor;
+	border-right: 1px solid currentColor;
+	height: 8px;
+	position: absolute;
+	right: 20px;
+	top: 50%;
+	transform: translateY(-65%) rotate(45deg);
+	width: 8px;
+}
+
+.kirei2026-guide__nav a > span {
+	word-break: keep-all;
+}
+
+.kirei2026-guide__nav-tail {
+	white-space: nowrap;
+}
+
+#kirei2026-guide,
+#kirei2026-schedule,
+#kirei2026-venue-guide,
+#kirei2026-program,
+#kirei2026-people {
+	scroll-margin-top: 96px;
+}
+
 .kirei2026-section-heading {
 	margin-bottom: 52px;
 	text-align: center;
@@ -813,6 +914,39 @@
 
 	.kirei2026-scroll-cue {
 		bottom: -125px;
+	}
+
+	.kirei2026-guide {
+		padding: 130px 0 64px;
+	}
+
+	.kirei2026-guide__heading h2 {
+		font-size: 30px;
+		letter-spacing: .12em;
+	}
+
+	.kirei2026-guide__heading p {
+		font-size: 13px;
+		letter-spacing: .04em;
+	}
+
+	.kirei2026-guide__nav {
+		margin-top: 34px;
+	}
+
+	.kirei2026-guide__nav ul {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.kirei2026-guide__nav a {
+		font-size: 14px;
+		letter-spacing: .03em;
+		min-height: 90px;
+		padding: 16px 28px 16px 12px;
+	}
+
+	.kirei2026-guide__nav a i {
+		right: 13px;
 	}
 
 	.kirei2026-schedule {

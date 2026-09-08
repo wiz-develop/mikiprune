@@ -199,6 +199,11 @@ $schedules = kirei2026_cfs_value( 'kirei_schedule_rows', $default_schedules );
 $programs  = kirei2026_cfs_value( 'kirei_program_rows', $default_programs );
 $people    = (array) kirei2026_cfs_value( 'kirei_people_rows', array() );
 $schedule_note = kirei2026_cfs_value( 'kirei_schedule_note' );
+$schedule_heading    = (string) kirei2026_cfs_value( 'kirei_schedule_heading', '日時・開催場所' );
+$venue_guide_heading = (string) kirei2026_cfs_value( 'kirei_venue_guide_heading', '会場案内・タイムスケジュール' );
+$program_heading     = (string) kirei2026_cfs_value( 'kirei_program_heading', '開催内容' );
+$people_heading      = (string) kirei2026_cfs_value( 'kirei_people_heading', '出演者' );
+$venue_guide_heading_parts = explode( '・', $venue_guide_heading, 2 );
 
 $has_program_content = false;
 foreach ( (array) $programs as $program ) {
@@ -244,10 +249,40 @@ $show_later_sections = 'mikiprune-2022renewal.3d-showcase.net' === wp_parse_url(
 			<h1 class="kirei2026-hero__title" id="kirei2026-title">
 				<img src="<?php echo esc_url( $asset_base . 'lirei2026-logo.png' ); ?>" alt="Beauty of MIKI EXELAND Kirei 2026 キレイに出会うと、自分をもっと好きになる。">
 			</h1>
-			<a class="kirei2026-scroll-cue" href="#kirei2026-schedule">
+			<a class="kirei2026-scroll-cue" href="#kirei2026-guide">
 				<span>Event information</span>
 				<i aria-hidden="true"></i>
 			</a>
+		</div>
+	</section>
+
+	<section class="kirei2026-guide" id="kirei2026-guide" aria-labelledby="kirei2026-guide-title">
+		<div class="kirei2026-container">
+			<header class="kirei2026-guide__heading">
+				<h2 id="kirei2026-guide-title">イベント情報</h2>
+				<p>Kirei 2026の開催情報をご案内します。</p>
+			</header>
+			<nav class="kirei2026-guide__nav" aria-label="ページ内メニュー">
+				<ul>
+					<li><a href="#kirei2026-schedule"><span><?php echo esc_html( $schedule_heading ); ?></span><i aria-hidden="true"></i></a></li>
+					<?php if ( $show_later_sections && $has_venue_details ) : ?>
+						<li>
+							<a href="#kirei2026-venue-guide">
+								<span>
+									<?php echo esc_html( $venue_guide_heading_parts[0] ); ?><?php if ( isset( $venue_guide_heading_parts[1] ) ) : ?>・<wbr><span class="kirei2026-guide__nav-tail"><?php echo esc_html( $venue_guide_heading_parts[1] ); ?></span><?php endif; ?>
+								</span>
+								<i aria-hidden="true"></i>
+							</a>
+						</li>
+					<?php endif; ?>
+					<?php if ( $show_later_sections ) : ?>
+						<li><a href="#kirei2026-program"><span><?php echo esc_html( $program_heading ); ?></span><i aria-hidden="true"></i></a></li>
+					<?php endif; ?>
+					<?php if ( $show_later_sections && $has_people ) : ?>
+						<li><a href="#kirei2026-people"><span><?php echo esc_html( $people_heading ); ?></span><i aria-hidden="true"></i></a></li>
+					<?php endif; ?>
+				</ul>
+			</nav>
 		</div>
 	</section>
 
@@ -255,7 +290,7 @@ $show_later_sections = 'mikiprune-2022renewal.3d-showcase.net' === wp_parse_url(
 		<div class="kirei2026-container">
 			<header class="kirei2026-section-heading">
 				<p>Schedule &amp; Venue</p>
-				<h2><?php echo esc_html( kirei2026_cfs_value( 'kirei_schedule_heading', '日時・開催場所' ) ); ?></h2>
+				<h2><?php echo esc_html( $schedule_heading ); ?></h2>
 			</header>
 
 			<div class="kirei2026-schedule__list">
@@ -299,14 +334,12 @@ $show_later_sections = 'mikiprune-2022renewal.3d-showcase.net' === wp_parse_url(
 
 	<?php if ( $show_later_sections ) : ?>
 	<?php if ( $has_venue_details ) : ?>
-	<section class="kirei2026-venue-guide" data-kirei-reveal>
+	<section class="kirei2026-venue-guide" id="kirei2026-venue-guide" data-kirei-reveal>
 		<div class="kirei2026-container">
 			<header class="kirei2026-section-heading">
 				<p>Venue guide</p>
 				<h2>
 					<?php
-					$venue_guide_heading       = (string) kirei2026_cfs_value( 'kirei_venue_guide_heading', '会場案内・タイムスケジュール' );
-					$venue_guide_heading_parts = explode( '・', $venue_guide_heading, 2 );
 					echo esc_html( $venue_guide_heading_parts[0] );
 					if ( isset( $venue_guide_heading_parts[1] ) ) {
 						echo '・<wbr><span class="kirei2026-venue-guide__title-tail">' . esc_html( $venue_guide_heading_parts[1] ) . '</span>';
@@ -384,11 +417,11 @@ $show_later_sections = 'mikiprune-2022renewal.3d-showcase.net' === wp_parse_url(
 	</section>
 	<?php endif; ?>
 
-	<section class="kirei2026-program" data-kirei-reveal>
+	<section class="kirei2026-program" id="kirei2026-program" data-kirei-reveal>
 		<div class="kirei2026-container">
 			<header class="kirei2026-section-heading kirei2026-section-heading--light">
 				<p>Three experiences</p>
-				<h2><?php echo esc_html( kirei2026_cfs_value( 'kirei_program_heading', '開催内容' ) ); ?></h2>
+				<h2><?php echo esc_html( $program_heading ); ?></h2>
 			</header>
 
 			<div class="kirei2026-program__list">
@@ -431,10 +464,10 @@ $show_later_sections = 'mikiprune-2022renewal.3d-showcase.net' === wp_parse_url(
 			</div>
 
 			<?php if ( $has_people ) : ?>
-				<section class="kirei2026-people" aria-labelledby="kirei2026-people-title">
+				<section class="kirei2026-people" id="kirei2026-people" aria-labelledby="kirei2026-people-title">
 					<header class="kirei2026-people__heading">
 						<p>Artists &amp; guests</p>
-						<h2 id="kirei2026-people-title"><?php echo esc_html( kirei2026_cfs_value( 'kirei_people_heading', '出演者' ) ); ?></h2>
+						<h2 id="kirei2026-people-title"><?php echo esc_html( $people_heading ); ?></h2>
 					</header>
 					<div class="kirei2026-people__list">
 						<?php foreach ( $people as $person ) : ?>
