@@ -517,6 +517,10 @@
 	--track-color: var(--kirei-green);
 }
 
+.kirei2026-timetable__track.is-combined {
+	--track-color: var(--kirei-rose);
+}
+
 .kirei2026-timetable__track.is-touch {
 	--track-color: var(--kirei-blue);
 }
@@ -576,6 +580,11 @@
 .kirei2026-timetable__track li span {
 	font-size: 13px;
 	line-height: 1.7;
+}
+
+.kirei2026-timetable__category {
+	font-weight: 600;
+	margin-right: .2em;
 }
 
 .kirei2026-program {

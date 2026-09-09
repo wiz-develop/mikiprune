@@ -89,6 +89,20 @@ function kirei2026_sync_field_schema( $page_id ) {
 	);
 	$add_field( 'floor_map_alt', 'フロアマップ画像の説明', 'text', $schedule_loop, '例：横浜会場のフロアマップ', array() );
 	$add_field( 'floor_map_caption', 'フロアマップ凡例', 'text', $schedule_loop, '例：A：みる／B：きく／C：ふれる', array() );
+	$add_field(
+		'combine_see_listen',
+		'「みる・きく」の表示方法',
+		'select',
+		$schedule_loop,
+		'大阪・福岡会場のように同じステージで交互に開催する場合は「合同表示」を選択します。',
+		array(
+			'choices'      => array(
+				'separate' => '個別表示',
+				'combined' => '合同表示',
+			),
+			'force_single' => 1,
+		)
+	);
 	$add_field( 'see_schedule', '「みる」タイムスケジュール', 'textarea', $schedule_loop, '1行につき「時間｜内容」の形式で入力します。', array() );
 	$add_field( 'listen_schedule', '「きく」タイムスケジュール', 'textarea', $schedule_loop, '1行につき「時間｜内容」の形式で入力します。', array() );
 	$add_field( 'touch_schedule', '「ふれる」開催時間', 'textarea', $schedule_loop, '1行につき「時間｜内容」の形式で入力します。', array() );
@@ -217,6 +231,7 @@ function kirei2026_sync_schedule_values() {
 				'floor_map_image'  => '',
 				'floor_map_alt'    => '横浜会場のフロアマップ',
 				'floor_map_caption'=> 'A：みる／B：きく／C：ふれる',
+				'combine_see_listen'=> 'separate',
 				'see_schedule'     => "10:15〜10:30｜素肌感を活かすメイク\n10:40〜10:55｜気分を彩るメイク\n11:05〜11:20｜素肌感を活かすメイク\n11:30〜11:45｜気分を彩るメイク",
 				'listen_schedule'  => "10:15〜10:30｜これからはもっとワガママに\n10:40〜10:55｜私らしく輝くということ\n11:05〜11:20｜これからはもっとワガママに\n11:30〜11:45｜私らしく輝くということ",
 				'touch_schedule'   => '10:00〜12:00｜ミキの化粧品の展示。ドゥース デュレシリーズは、ご希望の方にはタッチアップもいただけます。',
@@ -230,6 +245,7 @@ function kirei2026_sync_schedule_values() {
 				'floor_map_image'  => '',
 				'floor_map_alt'    => '大阪会場のフロアマップ',
 				'floor_map_caption'=> 'A・B：みる・きく共通ステージ／C：ふれる',
+				'combine_see_listen'=> 'combined',
 				'see_schedule'     => "10:15〜10:30｜素肌感を活かすメイク\n11:05〜11:20｜気分を彩るメイク",
 				'listen_schedule'  => "10:40〜10:55｜これからはもっとワガママに\n11:30〜11:45｜私らしく輝くということ",
 				'touch_schedule'   => '10:00〜12:00｜ミキの化粧品の展示。ドゥース デュレシリーズは、ご希望の方にはタッチアップもいただけます。',
@@ -243,6 +259,7 @@ function kirei2026_sync_schedule_values() {
 				'floor_map_image'  => '',
 				'floor_map_alt'    => '福岡会場のフロアマップ',
 				'floor_map_caption'=> 'A・B：みる・きく共通ステージ／C：ふれる',
+				'combine_see_listen'=> 'combined',
 				'see_schedule'     => "10:15〜10:30｜素肌感を活かすメイク\n11:05〜11:20｜気分を彩るメイク",
 				'listen_schedule'  => "10:40〜10:55｜これからはもっとワガママに\n11:30〜11:45｜私らしく輝くということ",
 				'touch_schedule'   => '10:00〜12:00｜ミキの化粧品の展示。ドゥース デュレシリーズは、ご希望の方にはタッチアップもいただけます。',
@@ -446,6 +463,7 @@ if ( empty( $current_schedule_rows ) ) {
 		'floor_map_image',
 		'floor_map_alt',
 		'floor_map_caption',
+		'combine_see_listen',
 		'see_schedule',
 		'listen_schedule',
 		'touch_schedule',
@@ -520,7 +538,7 @@ foreach ( $saved_rows as $saved_row ) {
 
 $ok = 'publish' === get_post_status( $page->ID )
 	&& 'page-kirei2026.php' === $template
-	&& 35 === count( $saved_fields )
+	&& 36 === count( $saved_fields )
 	&& 3 === count( $saved_rows )
 	&& 3 === count( $saved_program_rows )
 	&& 3 === count( $saved_people_rows )

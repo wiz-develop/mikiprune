@@ -143,6 +143,56 @@ if ( ! function_exists( 'kirei2026_timetable_items' ) ) {
 	}
 }
 
+if ( ! function_exists( 'kirei2026_combined_timetable_items' ) ) {
+	function kirei2026_combined_timetable_items( $see_items, $listen_items ) {
+		$combined     = array();
+		$source_items = array( 'みる' => $see_items, 'きく' => $listen_items );
+
+		// 1つの入力欄に「みる」「きく」の両方が明記されている場合は、
+		// その4行を合同スケジュールの正本として扱います。
+		foreach ( $source_items as $default_category => $items ) {
+			$explicit_categories = array();
+			foreach ( $items as $item ) {
+				$title = isset( $item['title'] ) ? trim( $item['title'] ) : '';
+				if ( preg_match( '/^[〈<＜]\s*(みる|きく)\s*[〉>＞]\s*/u', $title, $matches ) ) {
+					$explicit_categories[ $matches[1] ] = true;
+				}
+			}
+			if ( 2 === count( $explicit_categories ) ) {
+				$source_items = array( $default_category => $items );
+				break;
+			}
+		}
+
+		foreach ( $source_items as $default_category => $items ) {
+			foreach ( $items as $item ) {
+				$category = $default_category;
+				$title    = isset( $item['title'] ) ? trim( $item['title'] ) : '';
+
+				if ( preg_match( '/^[〈<＜]\s*(みる|きく)\s*[〉>＞]\s*/u', $title, $matches ) ) {
+					$category = $matches[1];
+					$title    = preg_replace( '/^[〈<＜]\s*(?:みる|きく)\s*[〉>＞]\s*/u', '', $title );
+				}
+
+				$item['category'] = $category;
+				$item['title']    = $title;
+				$key              = $item['time'] . "\0" . $category . "\0" . $title;
+				$combined[ $key ] = $item;
+			}
+		}
+
+		$combined = array_values( $combined );
+		usort(
+			$combined,
+			function ( $first, $second ) {
+				return strcmp( $first['time'], $second['time'] );
+			}
+		);
+
+		return $combined;
+	}
+}
+
 $default_schedules = array(
 	array(
 		'schedule_area'    => '横浜会場',
@@ -361,6 +411,7 @@ $show_later_sections = 'mikiprune-2022renewal.3d-showcase.net' === wp_parse_url(
 							'floor_map_image'  => '',
 							'floor_map_alt'    => '',
 							'floor_map_caption'=> '',
+							'combine_see_listen'=> 'separate',
 							'see_schedule'     => '',
 							'listen_schedule'  => '',
 							'touch_schedule'   => '',
@@ -370,6 +421,14 @@ $show_later_sections = 'mikiprune-2022renewal.3d-showcase.net' === wp_parse_url(
 					$see_items     = kirei2026_timetable_items( $schedule['see_schedule'] );
 					$listen_items  = kirei2026_timetable_items( $schedule['listen_schedule'] );
 					$touch_items   = kirei2026_timetable_items( $schedule['touch_schedule'] );
+					$combine_see_listen = $schedule['combine_see_listen'];
+					if ( is_array( $combine_see_listen ) ) {
+						$combine_keys       = array_keys( $combine_see_listen );
+						$combine_first_key  = reset( $combine_keys );
+						$combine_see_listen = is_int( $combine_first_key ) ? reset( $combine_see_listen ) : $combine_first_key;
+					}
+					$combine_see_listen = 'combined' === $combine_see_listen;
+					$combined_items = $combine_see_listen ? kirei2026_combined_timetable_items( $see_items, $listen_items ) : array();
 
 					if ( ! $floor_map_image_url && ! $see_items && ! $listen_items && ! $touch_items ) {
 						continue;
@@ -392,11 +451,16 @@ $show_later_sections = 'mikiprune-2022renewal.3d-showcase.net' === wp_parse_url(
 
 							<div class="kirei2026-timetable" aria-label="<?php echo esc_attr( $schedule['schedule_area'] ); ?>のタイムスケジュール">
 								<?php
-								$tracks = array(
-									array( 'keyword' => 'みる', 'label' => 'メイクアップショー', 'class' => 'is-see', 'items' => $see_items ),
-									array( 'keyword' => 'きく', 'label' => 'トークショー', 'class' => 'is-listen', 'items' => $listen_items ),
-									array( 'keyword' => 'ふれる', 'label' => '商品展示・タッチアップ', 'class' => 'is-touch', 'items' => $touch_items ),
-								);
+								$tracks = $combine_see_listen
+									? array(
+										array( 'keyword' => 'みる・きく', 'label' => 'メイクアップショー＆トークショー', 'class' => 'is-combined', 'items' => $combined_items ),
+										array( 'keyword' => 'ふれる', 'label' => '商品展示・タッチアップ', 'class' => 'is-touch', 'items' => $touch_items ),
+									)
+									: array(
+										array( 'keyword' => 'みる', 'label' => 'メイクアップショー', 'class' => 'is-see', 'items' => $see_items ),
+										array( 'keyword' => 'きく', 'label' => 'トークショー', 'class' => 'is-listen', 'items' => $listen_items ),
+										array( 'keyword' => 'ふれる', 'label' => '商品展示・タッチアップ', 'class' => 'is-touch', 'items' => $touch_items ),
+									);
 								?>
 								<?php foreach ( $tracks as $track ) : ?>
 									<?php if ( empty( $track['items'] ) ) { continue; } ?>
@@ -404,7 +468,12 @@ $show_later_sections = 'mikiprune-2022renewal.3d-showcase.net' === wp_parse_url(
 										<header><strong><?php echo esc_html( $track['keyword'] ); ?></strong><span><?php echo esc_html( $track['label'] ); ?></span></header>
 										<ul>
 											<?php foreach ( $track['items'] as $item ) : ?>
-												<li><time><?php echo esc_html( $item['time'] ); ?></time><?php if ( $item['title'] ) : ?><span><?php echo esc_html( $item['title'] ); ?></span><?php endif; ?></li>
+											<li>
+												<time><?php echo esc_html( $item['time'] ); ?></time>
+												<?php if ( $item['title'] ) : ?>
+													<span><?php if ( ! empty( $item['category'] ) ) : ?><b class="kirei2026-timetable__category">〈<?php echo esc_html( $item['category'] ); ?>〉</b><?php endif; ?><?php echo esc_html( $item['title'] ); ?></span>
+												<?php endif; ?>
+											</li>
 											<?php endforeach; ?>
 										</ul>
 									</section>
