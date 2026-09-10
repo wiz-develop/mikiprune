@@ -232,37 +232,37 @@ function kirei2026_sync_schedule_values() {
 				'floor_map_alt'    => '横浜会場のフロアマップ',
 				'floor_map_caption'=> 'A：みる／B：きく／C：ふれる',
 				'combine_see_listen'=> 'separate',
-				'see_schedule'     => "10:15〜10:30｜素肌感を活かすメイク\n10:40〜10:55｜気分を彩るメイク\n11:05〜11:20｜素肌感を活かすメイク\n11:30〜11:45｜気分を彩るメイク",
-				'listen_schedule'  => "10:15〜10:30｜これからはもっとワガママに\n10:40〜10:55｜私らしく輝くということ\n11:05〜11:20｜これからはもっとワガママに\n11:30〜11:45｜私らしく輝くということ",
-				'touch_schedule'   => '10:00〜12:00｜ミキの化粧品の展示。ドゥース デュレシリーズは、ご希望の方にはタッチアップもいただけます。',
+				'see_schedule'     => "10:15〜10:30｜テーマA-1\n10:40〜10:55｜テーマA-2\n11:05〜11:20｜テーマA-1\n11:30〜11:45｜テーマA-2",
+				'listen_schedule'  => "10:15〜10:30｜テーマ：これからは、もっとワガママに。私の人生を楽しもう。\n10:40〜10:55｜テーマ：「ちょっとキレイ」が、毎日をもっと楽しくする。\n11:05〜11:20｜テーマ：これからは、もっとワガママに。私の人生を楽しもう。\n11:30〜11:45｜テーマ：「ちょっとキレイ」が、毎日をもっと楽しくする。",
+				'touch_schedule'   => '10:00〜12:00｜ミキの化粧品の展示。ドゥース デュレシリーズは、ご希望の方にはタッチアップもいたします。',
 			),
 			array(
 				'schedule_area'    => '大阪会場',
 				'schedule_date'    => '12.8',
 				'schedule_weekday' => '火',
 				'schedule_time'    => '10:00〜12:00',
-				'schedule_venue'   => 'グランキューブ大阪 メインホワイエ',
+				'schedule_venue'   => 'グランキューブ大阪 メインホール',
 				'floor_map_image'  => '',
 				'floor_map_alt'    => '大阪会場のフロアマップ',
 				'floor_map_caption'=> 'A・B：みる・きく共通ステージ／C：ふれる',
 				'combine_see_listen'=> 'combined',
-				'see_schedule'     => "10:15〜10:30｜素肌感を活かすメイク\n11:05〜11:20｜気分を彩るメイク",
-				'listen_schedule'  => "10:40〜10:55｜これからはもっとワガママに\n11:30〜11:45｜私らしく輝くということ",
-				'touch_schedule'   => '10:00〜12:00｜ミキの化粧品の展示。ドゥース デュレシリーズは、ご希望の方にはタッチアップもいただけます。',
+				'see_schedule'     => "10:15〜10:30｜テーマA-1\n11:05〜11:20｜テーマA-2",
+				'listen_schedule'  => "10:40〜10:55｜テーマ：これからは、もっとワガママに。私の人生を楽しもう。\n11:30〜11:45｜テーマ：「ちょっとキレイ」が、毎日をもっと楽しくする。",
+				'touch_schedule'   => '10:00〜12:00｜ミキの化粧品の展示。ドゥース デュレシリーズは、ご希望の方にはタッチアップもいたます。',
 			),
 			array(
 				'schedule_area'    => '福岡会場',
 				'schedule_date'    => '12.15',
 				'schedule_weekday' => '火',
 				'schedule_time'    => '10:00〜12:00',
-				'schedule_venue'   => '福岡サンパレス 大ホール',
+				'schedule_venue'   => '福岡サンパレス コンサートホール',
 				'floor_map_image'  => '',
 				'floor_map_alt'    => '福岡会場のフロアマップ',
 				'floor_map_caption'=> 'A・B：みる・きく共通ステージ／C：ふれる',
 				'combine_see_listen'=> 'combined',
-				'see_schedule'     => "10:15〜10:30｜素肌感を活かすメイク\n11:05〜11:20｜気分を彩るメイク",
-				'listen_schedule'  => "10:40〜10:55｜これからはもっとワガママに\n11:30〜11:45｜私らしく輝くということ",
-				'touch_schedule'   => '10:00〜12:00｜ミキの化粧品の展示。ドゥース デュレシリーズは、ご希望の方にはタッチアップもいただけます。',
+				'see_schedule'     => "10:15〜10:30｜テーマA-1\n11:05〜11:20｜テーマA-2",
+				'listen_schedule'  => "10:40〜10:55｜テーマ：これからは、もっとワガママに。私の人生を楽しもう。\n11:30〜11:45｜テーマ：「ちょっとキレイ」が、毎日をもっと楽しくする。",
+				'touch_schedule'   => '10:00〜12:00｜ミキの化粧品の展示。ドゥース デュレシリーズは、ご希望の方にはタッチアップもいたします。',
 			),
 		),
 		'kirei_schedule_note'    => '※掲載の画像・イベント内容・構成はイメージです。実際の内容とは異なる場合があり、予告なく変更となる場合がございます。',
@@ -458,6 +458,25 @@ if ( empty( $current_schedule_rows ) ) {
 	foreach ( $page_values['kirei_schedule_rows'] as $default_schedule_row ) {
 		$default_schedule_by_area[ $default_schedule_row['schedule_area'] ] = $default_schedule_row;
 	}
+	$legacy_schedule_by_area = array(
+		'横浜会場' => array(
+			'see_schedule'    => "10:15〜10:30｜素肌感を活かすメイク\n10:40〜10:55｜気分を彩るメイク\n11:05〜11:20｜素肌感を活かすメイク\n11:30〜11:45｜気分を彩るメイク",
+			'listen_schedule' => "10:15〜10:30｜これからはもっとワガママに\n10:40〜10:55｜私らしく輝くということ\n11:05〜11:20｜これからはもっとワガママに\n11:30〜11:45｜私らしく輝くということ",
+			'touch_schedule'  => '10:00〜12:00｜ミキの化粧品の展示。ドゥース デュレシリーズは、ご希望の方にはタッチアップもいただけます。',
+		),
+		'大阪会場' => array(
+			'schedule_venue'  => 'グランキューブ大阪 メインホワイエ',
+			'see_schedule'    => "10:15〜10:30｜素肌感を活かすメイク\n11:05〜11:20｜気分を彩るメイク",
+			'listen_schedule' => "10:40〜10:55｜これからはもっとワガママに\n11:30〜11:45｜私らしく輝くということ",
+			'touch_schedule'  => '10:00〜12:00｜ミキの化粧品の展示。ドゥース デュレシリーズは、ご希望の方にはタッチアップもいただけます。',
+		),
+		'福岡会場' => array(
+			'schedule_venue'  => '福岡サンパレス 大ホール',
+			'see_schedule'    => "10:15〜10:30｜素肌感を活かすメイク\n11:05〜11:20｜気分を彩るメイク",
+			'listen_schedule' => "10:40〜10:55｜これからはもっとワガママに\n11:30〜11:45｜私らしく輝くということ",
+			'touch_schedule'  => '10:00〜12:00｜ミキの化粧品の展示。ドゥース デュレシリーズは、ご希望の方にはタッチアップもいただけます。',
+		),
+	);
 
 	$new_schedule_fields = array(
 		'floor_map_image',
@@ -478,6 +497,19 @@ if ( empty( $current_schedule_rows ) ) {
 		foreach ( $new_schedule_fields as $field_name ) {
 			if ( empty( $current_schedule_row[ $field_name ] ) ) {
 				$current_schedule_row[ $field_name ] = $default_schedule_by_area[ $area ][ $field_name ];
+			}
+		}
+
+		// 承認前の初期値に一致する場合だけ更新し、管理画面で編集済みの値は保護します。
+		if ( isset( $legacy_schedule_by_area[ $area ] ) ) {
+			foreach ( $legacy_schedule_by_area[ $area ] as $field_name => $legacy_value ) {
+				$current_value = isset( $current_schedule_row[ $field_name ] ) ? (string) $current_schedule_row[ $field_name ] : '';
+				$current_value = trim( str_replace( "\r\n", "\n", $current_value ) );
+				$legacy_value  = trim( str_replace( "\r\n", "\n", $legacy_value ) );
+
+				if ( $current_value === $legacy_value ) {
+					$current_schedule_row[ $field_name ] = $default_schedule_by_area[ $area ][ $field_name ];
+				}
 			}
 		}
 	}
