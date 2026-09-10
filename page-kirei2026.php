@@ -423,11 +423,11 @@ $show_later_sections = true;
 					$touch_items   = kirei2026_timetable_items( $schedule['touch_schedule'] );
 					$combine_see_listen = $schedule['combine_see_listen'];
 					if ( is_array( $combine_see_listen ) ) {
-						$combine_keys       = array_keys( $combine_see_listen );
-						$combine_first_key  = reset( $combine_keys );
-						$combine_see_listen = is_int( $combine_first_key ) ? reset( $combine_see_listen ) : $combine_first_key;
+						$combine_see_listen = array_merge( array_keys( $combine_see_listen ), array_values( $combine_see_listen ) );
+					} else {
+						$combine_see_listen = array( $combine_see_listen );
 					}
-					$combine_see_listen = 'combined' === $combine_see_listen;
+					$combine_see_listen = in_array( 'combined', $combine_see_listen, true ) || in_array( '合同表示', $combine_see_listen, true );
 					$combined_items = $combine_see_listen ? kirei2026_combined_timetable_items( $see_items, $listen_items ) : array();
 
 					if ( ! $floor_map_image_url && ! $see_items && ! $listen_items && ! $touch_items ) {
