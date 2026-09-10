@@ -121,6 +121,78 @@ if ( ! function_exists( 'kirei2026_closing_message_html' ) ) {
 	}
 }
 
+if ( ! function_exists( 'kirei2026_timetable_items' ) ) {
+	function kirei2026_timetable_items( $value ) {
+		$items = array();
+		$lines = preg_split( '/\R/u', trim( (string) $value ) );
+
+		foreach ( (array) $lines as $line ) {
+			$line = trim( $line );
+			if ( '' === $line ) {
+				continue;
+			}
+
+			$parts   = preg_split( '/\s*[|｜]\s*/u', $line, 2 );
+			$items[] = array(
+				'time'  => trim( $parts[0] ),
+				'title' => isset( $parts[1] ) ? trim( $parts[1] ) : '',
+			);
+		}
+
+		return $items;
+	}
+}
+
+if ( ! function_exists( 'kirei2026_combined_timetable_items' ) ) {
+	function kirei2026_combined_timetable_items( $see_items, $listen_items ) {
+		$combined     = array();
+		$source_items = array( 'みる' => $see_items, 'きく' => $listen_items );
+
+		// 1つの入力欄に「みる」「きく」の両方が明記されている場合は、
+		// その4行を合同スケジュールの正本として扱います。
+		foreach ( $source_items as $default_category => $items ) {
+			$explicit_categories = array();
+			foreach ( $items as $item ) {
+				$title = isset( $item['title'] ) ? trim( $item['title'] ) : '';
+				if ( preg_match( '/^[〈<＜]\s*(みる|きく)\s*[〉>＞]\s*/u', $title, $matches ) ) {
+					$explicit_categories[ $matches[1] ] = true;
+				}
+			}
+			if ( 2 === count( $explicit_categories ) ) {
+				$source_items = array( $default_category => $items );
+				break;
+			}
+		}
+
+		foreach ( $source_items as $default_category => $items ) {
+			foreach ( $items as $item ) {
+				$category = $default_category;
+				$title    = isset( $item['title'] ) ? trim( $item['title'] ) : '';
+
+				if ( preg_match( '/^[〈<＜]\s*(みる|きく)\s*[〉>＞]\s*/u', $title, $matches ) ) {
+					$category = $matches[1];
+					$title    = preg_replace( '/^[〈<＜]\s*(?:みる|きく)\s*[〉>＞]\s*/u', '', $title );
+				}
+
+				$item['category'] = $category;
+				$item['title']    = $title;
+				$key              = $item['time'] . "\0" . $category . "\0" . $title;
+				$combined[ $key ] = $item;
+			}
+		}
+
+		$combined = array_values( $combined );
+		usort(
+			$combined,
+			function ( $first, $second ) {
+				return strcmp( $first['time'], $second['time'] );
+			}
+		);
+
+		return $combined;
+	}
+}
+
 $default_schedules = array(
 	array(
 		'schedule_area'    => '横浜会場',
@@ -175,7 +247,13 @@ $default_programs = array(
 
 $schedules = kirei2026_cfs_value( 'kirei_schedule_rows', $default_schedules );
 $programs  = kirei2026_cfs_value( 'kirei_program_rows', $default_programs );
+$people    = (array) kirei2026_cfs_value( 'kirei_people_rows', array() );
 $schedule_note = kirei2026_cfs_value( 'kirei_schedule_note' );
+$schedule_heading    = (string) kirei2026_cfs_value( 'kirei_schedule_heading', '日時・開催場所' );
+$venue_guide_heading = (string) kirei2026_cfs_value( 'kirei_venue_guide_heading', '会場案内・タイムスケジュール' );
+$program_heading     = (string) kirei2026_cfs_value( 'kirei_program_heading', '開催内容' );
+$people_heading      = (string) kirei2026_cfs_value( 'kirei_people_heading', '出演者' );
+$venue_guide_heading_parts = explode( '・', $venue_guide_heading, 2 );
 
 $has_program_content = false;
 foreach ( (array) $programs as $program ) {
@@ -191,12 +269,25 @@ if ( ! $has_program_content ) {
 	$programs = $default_programs;
 }
 
-$guest_name    = kirei2026_cfs_value( 'kirei_guest_name' );
-$guest_profile = kirei2026_cfs_value( 'kirei_guest_profile' );
-$guest_image   = kirei2026_image_url( kirei2026_cfs_value( 'kirei_guest_image' ) );
-$show_guest    = '' !== trim( (string) $guest_name ) || '' !== trim( (string) $guest_profile ) || '' !== $guest_image;
+$has_venue_details = false;
+foreach ( (array) $schedules as $schedule ) {
+	foreach ( array( 'floor_map_image', 'see_schedule', 'listen_schedule', 'touch_schedule' ) as $field_name ) {
+		if ( ! empty( $schedule[ $field_name ] ) ) {
+			$has_venue_details = true;
+			break 2;
+		}
+	}
+}
 
-// 開催内容以降を公開します。
+$has_people = false;
+foreach ( $people as $person ) {
+	if ( ! empty( $person['person_name'] ) || ! empty( $person['person_profile'] ) || ! empty( $person['person_image'] ) ) {
+		$has_people = true;
+		break;
+	}
+}
+
+// 本番承認済みのため、開催内容以降も公開します。
 $show_later_sections = true;
 ?>
 
@@ -208,10 +299,40 @@ $show_later_sections = true;
 			<h1 class="kirei2026-hero__title" id="kirei2026-title">
 				<img src="<?php echo esc_url( $asset_base . 'lirei2026-logo.png' ); ?>" alt="Beauty of MIKI EXELAND Kirei 2026 キレイに出会うと、自分をもっと好きになる。">
 			</h1>
-			<a class="kirei2026-scroll-cue" href="#kirei2026-schedule">
+			<a class="kirei2026-scroll-cue" href="#kirei2026-guide">
 				<span>Event information</span>
 				<i aria-hidden="true"></i>
 			</a>
+		</div>
+	</section>
+
+	<section class="kirei2026-guide" id="kirei2026-guide" aria-labelledby="kirei2026-guide-title">
+		<div class="kirei2026-container">
+			<header class="kirei2026-guide__heading">
+				<h2 id="kirei2026-guide-title">イベント情報</h2>
+				<p>Kirei 2026の開催情報をご案内します。</p>
+			</header>
+			<nav class="kirei2026-guide__nav" aria-label="ページ内メニュー">
+				<ul>
+					<li><a href="#kirei2026-schedule"><span><?php echo esc_html( $schedule_heading ); ?></span><i aria-hidden="true"></i></a></li>
+					<?php if ( $show_later_sections && $has_venue_details ) : ?>
+						<li>
+							<a href="#kirei2026-venue-guide">
+								<span>
+									<?php echo esc_html( $venue_guide_heading_parts[0] ); ?><?php if ( isset( $venue_guide_heading_parts[1] ) ) : ?>・<wbr><span class="kirei2026-guide__nav-tail"><?php echo esc_html( $venue_guide_heading_parts[1] ); ?></span><?php endif; ?>
+								</span>
+								<i aria-hidden="true"></i>
+							</a>
+						</li>
+					<?php endif; ?>
+					<?php if ( $show_later_sections ) : ?>
+						<li><a href="#kirei2026-program"><span><?php echo esc_html( $program_heading ); ?></span><i aria-hidden="true"></i></a></li>
+					<?php endif; ?>
+					<?php if ( $show_later_sections && $has_people ) : ?>
+						<li><a href="#kirei2026-people"><span><?php echo esc_html( $people_heading ); ?></span><i aria-hidden="true"></i></a></li>
+					<?php endif; ?>
+				</ul>
+			</nav>
 		</div>
 	</section>
 
@@ -219,7 +340,7 @@ $show_later_sections = true;
 		<div class="kirei2026-container">
 			<header class="kirei2026-section-heading">
 				<p>Schedule &amp; Venue</p>
-				<h2><?php echo esc_html( kirei2026_cfs_value( 'kirei_schedule_heading', '日時・開催場所' ) ); ?></h2>
+				<h2><?php echo esc_html( $schedule_heading ); ?></h2>
 			</header>
 
 			<div class="kirei2026-schedule__list">
@@ -233,9 +354,6 @@ $show_later_sections = true;
 							'schedule_weekday' => '',
 							'schedule_time'    => '',
 							'schedule_venue'   => '',
-							'access_url'       => '',
-							'floor_map_url'    => '',
-							'timetable_url'    => '',
 						)
 					);
 					?>
@@ -254,13 +372,6 @@ $show_later_sections = true;
 								<p class="kirei2026-date-card__time"><?php echo esc_html( $schedule['schedule_time'] ); ?></p>
 							<?php endif; ?>
 						</div>
-						<?php if ( $schedule['access_url'] || $schedule['floor_map_url'] || $schedule['timetable_url'] ) : ?>
-							<nav class="kirei2026-date-card__links" aria-label="<?php echo esc_attr( $schedule['schedule_area'] ); ?>のご案内">
-								<?php if ( $schedule['access_url'] ) : ?><a href="<?php echo esc_url( $schedule['access_url'] ); ?>">アクセス</a><?php endif; ?>
-								<?php if ( $schedule['floor_map_url'] ) : ?><a href="<?php echo esc_url( $schedule['floor_map_url'] ); ?>">フロアマップ</a><?php endif; ?>
-								<?php if ( $schedule['timetable_url'] ) : ?><a href="<?php echo esc_url( $schedule['timetable_url'] ); ?>">タイムスケジュール</a><?php endif; ?>
-							</nav>
-						<?php endif; ?>
 					</article>
 				<?php endforeach; ?>
 			</div>
@@ -272,11 +383,115 @@ $show_later_sections = true;
 	</section>
 
 	<?php if ( $show_later_sections ) : ?>
-	<section class="kirei2026-program" data-kirei-reveal>
+	<?php if ( $has_venue_details ) : ?>
+	<section class="kirei2026-venue-guide" id="kirei2026-venue-guide" data-kirei-reveal>
+		<div class="kirei2026-container">
+			<header class="kirei2026-section-heading">
+				<p>Venue guide</p>
+				<h2>
+					<?php
+					echo esc_html( $venue_guide_heading_parts[0] );
+					if ( isset( $venue_guide_heading_parts[1] ) ) {
+						echo '・<wbr><span class="kirei2026-venue-guide__title-tail">' . esc_html( $venue_guide_heading_parts[1] ) . '</span>';
+					}
+					?>
+				</h2>
+			</header>
+			<p class="kirei2026-venue-guide__instruction">会場を選択すると、フロアマップとタイムスケジュールを確認できます。</p>
+
+			<div class="kirei2026-venue-guide__list">
+				<?php foreach ( (array) $schedules as $index => $schedule ) : ?>
+					<?php
+					$schedule = wp_parse_args(
+						$schedule,
+						array(
+							'schedule_area'    => '',
+							'schedule_date'    => '',
+							'schedule_weekday' => '',
+							'floor_map_image'  => '',
+							'floor_map_alt'    => '',
+							'floor_map_caption'=> '',
+							'combine_see_listen'=> 'separate',
+							'see_schedule'     => '',
+							'listen_schedule'  => '',
+							'touch_schedule'   => '',
+						)
+					);
+					$floor_map_image_url = kirei2026_image_url( $schedule['floor_map_image'] );
+					$see_items     = kirei2026_timetable_items( $schedule['see_schedule'] );
+					$listen_items  = kirei2026_timetable_items( $schedule['listen_schedule'] );
+					$touch_items   = kirei2026_timetable_items( $schedule['touch_schedule'] );
+					$combine_see_listen = $schedule['combine_see_listen'];
+					if ( is_array( $combine_see_listen ) ) {
+						$combine_keys       = array_keys( $combine_see_listen );
+						$combine_first_key  = reset( $combine_keys );
+						$combine_see_listen = is_int( $combine_first_key ) ? reset( $combine_see_listen ) : $combine_first_key;
+					}
+					$combine_see_listen = 'combined' === $combine_see_listen;
+					$combined_items = $combine_see_listen ? kirei2026_combined_timetable_items( $see_items, $listen_items ) : array();
+
+					if ( ! $floor_map_image_url && ! $see_items && ! $listen_items && ! $touch_items ) {
+						continue;
+					}
+					?>
+					<details class="kirei2026-venue">
+						<summary>
+							<span><?php echo esc_html( $schedule['schedule_area'] ); ?></span>
+							<small><?php echo esc_html( $schedule['schedule_date'] ); ?>（<?php echo esc_html( $schedule['schedule_weekday'] ); ?>）</small>
+							<i aria-hidden="true"></i>
+						</summary>
+						<div class="kirei2026-venue__content">
+							<?php if ( $floor_map_image_url ) : ?>
+								<figure class="kirei2026-floor-map">
+									<p class="kirei2026-floor-map__label">フロアイメージ</p>
+									<img src="<?php echo esc_url( $floor_map_image_url ); ?>" alt="<?php echo esc_attr( $schedule['floor_map_alt'] ); ?>" loading="lazy">
+									<?php if ( $schedule['floor_map_caption'] ) : ?><figcaption><?php echo esc_html( $schedule['floor_map_caption'] ); ?></figcaption><?php endif; ?>
+								</figure>
+							<?php endif; ?>
+
+							<div class="kirei2026-timetable" aria-label="<?php echo esc_attr( $schedule['schedule_area'] ); ?>のタイムスケジュール">
+								<?php
+								$tracks = $combine_see_listen
+									? array(
+										array( 'keyword' => 'みる・きく', 'label' => 'メイクアップショー＆トークショー', 'class' => 'is-combined', 'items' => $combined_items ),
+										array( 'keyword' => 'ふれる', 'label' => '商品展示・タッチアップ', 'class' => 'is-touch', 'items' => $touch_items ),
+									)
+									: array(
+										array( 'keyword' => 'みる', 'label' => 'メイクアップショー', 'class' => 'is-see', 'items' => $see_items ),
+										array( 'keyword' => 'きく', 'label' => 'トークショー', 'class' => 'is-listen', 'items' => $listen_items ),
+										array( 'keyword' => 'ふれる', 'label' => '商品展示・タッチアップ', 'class' => 'is-touch', 'items' => $touch_items ),
+									);
+								?>
+								<?php foreach ( $tracks as $track ) : ?>
+									<?php if ( empty( $track['items'] ) ) { continue; } ?>
+									<section class="kirei2026-timetable__track <?php echo esc_attr( $track['class'] ); ?>">
+										<header><strong><?php echo esc_html( $track['keyword'] ); ?></strong><span><?php echo esc_html( $track['label'] ); ?></span></header>
+										<ul>
+											<?php foreach ( $track['items'] as $item ) : ?>
+											<li>
+												<time><?php echo esc_html( $item['time'] ); ?></time>
+												<?php if ( $item['title'] ) : ?>
+													<span><?php if ( ! empty( $item['category'] ) ) : ?><b class="kirei2026-timetable__category">〈<?php echo esc_html( $item['category'] ); ?>〉</b><?php endif; ?><?php echo esc_html( $item['title'] ); ?></span>
+												<?php endif; ?>
+											</li>
+											<?php endforeach; ?>
+										</ul>
+									</section>
+								<?php endforeach; ?>
+							</div>
+						</div>
+					</details>
+				<?php endforeach; ?>
+			</div>
+		</div>
+	</section>
+	<?php endif; ?>
+
+	<section class="kirei2026-program" id="kirei2026-program" data-kirei-reveal>
 		<div class="kirei2026-container">
 			<header class="kirei2026-section-heading kirei2026-section-heading--light">
 				<p>Three experiences</p>
-				<h2><?php echo esc_html( kirei2026_cfs_value( 'kirei_program_heading', '開催内容' ) ); ?></h2>
+				<h2><?php echo esc_html( $program_heading ); ?></h2>
 			</header>
 
 			<div class="kirei2026-program__list">
@@ -318,27 +533,54 @@ $show_later_sections = true;
 				<?php endforeach; ?>
 			</div>
 
+			<?php if ( $has_people ) : ?>
+				<section class="kirei2026-people" id="kirei2026-people" aria-labelledby="kirei2026-people-title">
+					<header class="kirei2026-people__heading">
+						<p>Artists &amp; guests</p>
+						<h2 id="kirei2026-people-title"><?php echo esc_html( $people_heading ); ?></h2>
+					</header>
+					<div class="kirei2026-people__list">
+						<?php foreach ( $people as $person ) : ?>
+							<?php
+							$person = wp_parse_args(
+								$person,
+								array(
+									'person_program'  => 'see',
+									'person_label'    => '',
+									'person_role'     => '',
+									'person_name'     => '',
+									'person_profile'  => '',
+									'person_image'    => '',
+									'person_image_alt'=> '',
+								)
+							);
+							$person_program = $person['person_program'];
+							if ( is_array( $person_program ) ) {
+								$program_keys   = array_keys( $person_program );
+								$first_key      = reset( $program_keys );
+								$person_program = is_int( $first_key ) ? reset( $person_program ) : $first_key;
+							}
+							$person_image_url = kirei2026_image_url( $person['person_image'] );
+							$person_class     = 'listen' === $person_program ? 'is-listen' : 'is-see';
+							?>
+							<article class="kirei2026-person <?php echo esc_attr( $person_class ); ?>">
+								<?php if ( $person_image_url ) : ?><div class="kirei2026-person__image"><img src="<?php echo esc_url( $person_image_url ); ?>" alt="<?php echo esc_attr( $person['person_image_alt'] ); ?>" loading="lazy"></div><?php endif; ?>
+								<div class="kirei2026-person__body">
+									<p class="kirei2026-person__program"><?php echo esc_html( 'listen' === $person_program ? 'きく' : 'みる' ); ?></p>
+									<?php if ( $person['person_label'] ) : ?><p class="kirei2026-person__label"><?php echo esc_html( $person['person_label'] ); ?></p><?php endif; ?>
+									<?php if ( $person['person_role'] ) : ?><p class="kirei2026-person__role"><?php echo esc_html( $person['person_role'] ); ?></p><?php endif; ?>
+									<h3><?php echo esc_html( $person['person_name'] ); ?><small>さん</small></h3>
+									<p class="kirei2026-person__profile"><?php echo nl2br( esc_html( $person['person_profile'] ) ); ?></p>
+								</div>
+							</article>
+						<?php endforeach; ?>
+					</div>
+				</section>
+			<?php endif; ?>
+
 			<p class="kirei2026-note kirei2026-note--light"><?php echo esc_html( kirei2026_cfs_value( 'kirei_program_note', '※掲載の画像・イベント内容・構成はイメージです。実際の内容とは異なる場合があります。' ) ); ?></p>
 		</div>
 	</section>
-
-	<?php if ( $show_guest ) : ?>
-		<section class="kirei2026-guest" data-kirei-reveal>
-			<div class="kirei2026-container kirei2026-guest__inner">
-				<?php if ( $guest_image ) : ?>
-					<div class="kirei2026-guest__image"><img src="<?php echo esc_url( $guest_image ); ?>" alt="<?php echo esc_attr( $guest_name ); ?>" loading="lazy"></div>
-				<?php endif; ?>
-				<div class="kirei2026-guest__body">
-					<p class="kirei2026-guest__label">Talk guest</p>
-					<h2><?php echo esc_html( kirei2026_cfs_value( 'kirei_guest_heading', '出演者プロフィール' ) ); ?></h2>
-					<?php if ( $guest_name ) : ?><h3><?php echo esc_html( $guest_name ); ?></h3><?php endif; ?>
-					<?php $guest_role = kirei2026_cfs_value( 'kirei_guest_role' ); ?>
-					<?php if ( $guest_role ) : ?><p class="kirei2026-guest__role"><?php echo esc_html( $guest_role ); ?></p><?php endif; ?>
-					<div class="kirei2026-guest__profile"><?php echo wp_kses_post( wpautop( $guest_profile ) ); ?></div>
-				</div>
-			</div>
-		</section>
-	<?php endif; ?>
 
 	<section class="kirei2026-closing" aria-label="Kirei 2026 メッセージ">
 		<p><?php echo kirei2026_closing_message_html( kirei2026_cfs_value( 'kirei_closing_message', 'キレイがきっと見つかる特別な時間（とき）' ) ); ?></p>
